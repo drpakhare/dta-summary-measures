@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rebuild the 2×2 Lab</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="widget.css">
+<script src="theme.js"></script>
+<style>
+  .case { display: grid; gap: 12px; background: var(--wash); border-top: 4px solid var(--band); padding: 16px 18px; }
+  .case.done { border-top-color: var(--good); }
+  .case h2 { margin: 0; }
+  blockquote { margin: 0; padding: 10px 14px; background: var(--paper); border-left: 4px solid var(--rule); font: 16px/1.5 var(--font-head); }
+  blockquote table { font-family: var(--font-body); margin-top: 8px; }
+  .cells { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: end; }
+  .cells label { display: grid; gap: 3px; font-size: 13px; color: var(--dim); font-weight: 600; letter-spacing: .04em; }
+  .cells input { width: 84px; font: 600 18px var(--font-head); text-align: center; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 5px; }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn { font: 600 15px var(--font-body); padding: 7px 14px; border-radius: 8px; border: 1px solid var(--band); background: var(--band); color: var(--band-ink); cursor: pointer; }
+  .btn.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+  .fb { margin: 0; }
+  .fb:empty { display: none; }
+  .rule { font-size: 15px; background: var(--warn-wash); border-left: 4px solid var(--warn); padding: 8px 12px; }
+  ol.how { margin: 0; padding-left: 1.2em; font-size: 15px; }
+</style>
+</head>
+<body>
+<header class="band"><div>
+  <p class="kicker"><a href="../index.html">MetaMastery 3.0 · DTA summary measures</a> · Lab 2</p>
+  <h1>Rebuild the 2×2 Lab</h1>
+  <p>Each study below reports its results the way real papers do: incompletely, sideways, or at several cut-offs. Rebuild the 2×2 table you would enter into RevMan, then press Check.</p>
+</div></header>
+<main>
+  <section class="panel">
+    <h2>How to work</h2>
+    <ol class="how">
+      <li>Find the number with and without SBI in the analysis (D and ND).</li>
+      <li>Work out TP, FP, FN and TN. Round to whole infants.</li>
+      <li>Recalculate the published percentages from your table. They must come back.</li>
+    </ol>
+    <p class="note">Enter cells in the RevMan order: TP, FP, FN, TN. All five studies are illustrative, constructed for teaching.</p>
+  </section>
+  <div id="cases" style="display:grid;gap:22px"></div>
+  <footer>Answers to the Check button come from the same illustrative dataset used in the slides and the other labs.</footer>
+</main>
+<script>
+(function () {
+  var CASES = [
+    { id: 'B', title: 'Example: Study B (worked on the slides)',
+      text: '<p>"We enrolled 1100 febrile infants, of whom 99 (9.0%) had a serious bacterial infection. At a cut-off of 20 mg/L, CRP had a sensitivity of 70.7% and a specificity of 85.3%."</p>',
+      ans: [70, 147, 29, 854], D: 99, ND: 1001,
+      hint: 'TP = 0.707 × 99. TN = 0.853 × (1100 − 99).',
+      why: 'TP = 0.707 × 99 = 69.99, so 70; FN = 29. TN = 0.853 × 1001 = 853.9, so 854; FP = 147. Check: 70/99 = 70.7% and 854/1001 = 85.3%. Record in your form that this table was back-calculated.' },
+    { id: 'C', title: 'Study C: sensitivity and PPV only',
+      text: '<p>"Of 420 infants, 76 (18.1%) had a serious bacterial infection. A CRP of 40 mg/L or more had a sensitivity of 61.8% and a positive predictive value of 77.0%."</p>',
+      ans: [47, 14, 29, 330], D: 76, ND: 344,
+      alt: [{ c: [47, 13, 29, 331], m: 'Close: check your rounding of FP. 47 / 0.770 = 61.04 positives, so FP = 61 − 47 = 14.' },
+            { c: [47, 15, 29, 329], m: 'Close: check your rounding of FP. 47 / 0.770 = 61.04 positives, so FP = 61 − 47 = 14.' }],
+      hint: 'TP = 0.618 × 76. All test positives = TP / PPV, so FP = TP / 0.770 − TP. The rest of the 344 without SBI are TN.',
+      why: 'TP = 0.618 × 76 = 46.97, so 47; FN = 29. Test positives = 47 / 0.770 = 61.04, so 61, and FP = 14. TN = 344 − 14 = 330. Check: 47/76 = 61.8% and 47/61 = 77.0%. Specificity is then 330/344 = 95.9%, a figure the paper never printed.' },
+    { id: 'D', title: 'Study D: inconclusive and unverified infants, table printed sideways',
+      text: '<p>"Of 804 infants enrolled, 30 did not have a blood or urine culture and were excluded. Of the remaining 774, CRP could not be reported for 14 because the sample was haemolysed; 3 of these 14 had SBI. Table 2 shows results for the 760 infants analysed."</p>' +
+        '<table><tr><th>Table 2</th><th class="num">CRP ≥ 40 mg/L</th><th class="num">CRP &lt; 40 mg/L</th><th class="num">Total</th></tr>' +
+        '<tr><td>SBI</td><td class="num">41</td><td class="num">43</td><td class="num">84</td></tr>' +
+        '<tr><td>No SBI</td><td class="num">27</td><td class="num">649</td><td class="num">676</td></tr></table>',
+      ans: [41, 27, 43, 649], D: 84, ND: 676, extra: { unv: 30, inc: 14 },
+      alt: [{ c: [41, 27, 46, 660], m: 'This counts the 14 inconclusive infants as test negatives. That is a useful sensitivity analysis (sensitivity falls from 48.8% to 47.1%), but the main extraction is the 760 infants the study analysed. Record the 14 separately.' },
+            { c: [44, 38, 43, 649], m: 'This counts the 14 inconclusive infants as test positives. Keep it for a sensitivity analysis; the main table is the 760 analysed.' }],
+      hint: 'The table has the test in the columns and the truth in the rows. TP is SBI with CRP ≥ 40. FP is no SBI with CRP ≥ 40.',
+      why: 'TP 41, FP 27, FN 43, TN 649 (760 infants). Also record 30 unverified and 14 inconclusive. QUADAS-3 asks whether all participants were included in the analysis, and these numbers answer it. If inconclusive results are counted as negative, sensitivity falls from 41/84 = 48.8% to 41/87 = 47.1%.' },
+    { id: 'E', title: 'Study E: three cut-offs in one paper',
+      text: '<p>"The protocol specified a CRP cut-off of 80 mg/L. Results at 20 and 40 mg/L are reported as post hoc analyses. 57 of 380 infants had SBI."</p>' +
+        '<table><tr><th>Cut-off</th><th class="num">SBI, test positive (of 57)</th><th class="num">No SBI, test positive (of 323)</th></tr>' +
+        '<tr><td>20 mg/L (post hoc)</td><td class="num">45</td><td class="num">47</td></tr>' +
+        '<tr><td>40 mg/L (post hoc)</td><td class="num">33</td><td class="num">13</td></tr>' +
+        '<tr><td>80 mg/L (prespecified)</td><td class="num">19</td><td class="num">2</td></tr></table>',
+      rule: 'Your review protocol says: extract a 2×2 table at every cut-off for the multiple-threshold analysis; use each study\'s prespecified cut-off in the main analysis.',
+      ans: [19, 2, 38, 321], D: 57, ND: 323,
+      alt: [{ c: [45, 47, 12, 276], m: 'That is the 20 mg/L table. Extract it for the multiple-threshold dataset, but the main analysis takes the prespecified cut-off.' },
+            { c: [33, 13, 24, 310], m: 'That is the 40 mg/L table. Extract it for the multiple-threshold dataset, but the main analysis takes the prespecified cut-off.' }],
+      hint: 'Use the 80 mg/L row. FN = 57 − TP. TN = 323 − FP.',
+      why: 'Main analysis: TP 19, FP 2, FN 38, TN 321 at 80 mg/L. Also extract 20 mg/L (45, 47, 12, 276) and 40 mg/L (33, 13, 24, 310) for the multiple-threshold dataset. Picking the cut-off that looks best in each study is a form of selective reporting and makes the test look better than it is.' }
+  ];
+  var host = document.getElementById('cases');
+  CASES.forEach(function (c) {
+    var s = document.createElement('section'); s.className = 'case'; s.id = 'case-' + c.id;
+    var extra = c.extra ? '<label>Unverified<input data-k="unv" type="number" min="0"></label><label>Inconclusive<input data-k="inc" type="number" min="0"></label>' : '';
+    s.innerHTML = '<h2>' + c.title + '</h2><blockquote>' + c.text + '</blockquote>' +
+      (c.rule ? '<p class="rule">' + c.rule + '</p>' : '') +
+      '<div class="cells">' + ['TP', 'FP', 'FN', 'TN'].map(function (k, i) {
+        return '<label>' + k + '<input data-i="' + i + '" type="number" min="0" aria-label="' + k + ' for study ' + c.id + '"></label>'; }).join('') + extra + '</div>' +
+      '<div class="btns"><button class="btn" data-a="check">Check</button><button class="btn ghost" data-a="hint">Hint</button><button class="btn ghost" data-a="show">Show answer</button></div>' +
+      '<p class="fb claim" aria-live="polite"></p>';
+    host.appendChild(s);
+    var fb = s.querySelector('.fb');
+    function vals() { return [].map.call(s.querySelectorAll('input[data-i]'), function (x) { return x.value === '' ? NaN : +x.value; }); }
+    function say(cls, msg) { fb.className = 'fb claim ' + cls; fb.textContent = msg; }
+    s.querySelector('[data-a=hint]').onclick = function () { say('', 'Hint: ' + c.hint); };
+    s.querySelector('[data-a=show]').onclick = function () {
+      c.ans.forEach(function (v, i) { s.querySelector('input[data-i="' + i + '"]').value = v; });
+      if (c.extra) { s.querySelector('[data-k=unv]').value = c.extra.unv; s.querySelector('[data-k=inc]').value = c.extra.inc; }
+      s.classList.add('done'); say('good', c.why);
+    };
+    s.querySelector('[data-a=check]').onclick = function () {
+      var v = vals(), a = c.ans;
+      if (v.some(isNaN)) return say('warn', 'Fill in all four cells first.');
+      var same = function (x) { return x.every(function (n, i) { return n === v[i]; }); };
+      if (same(a)) {
+        if (c.extra) {
+          var u = +s.querySelector('[data-k=unv]').value, n = +s.querySelector('[data-k=inc]').value;
+          if (u !== c.extra.unv || n !== c.extra.inc) return say('warn', 'The 2×2 table is right. Now record how many infants were unverified and how many had an inconclusive CRP: your form needs both.');
+        }
+        s.classList.add('done'); return say('good', 'Correct. ' + c.why);
+      }
+      if (same([a[0], a[2], a[1], a[3]])) return say('bad', 'FP and FN are swapped. Check which way the table is printed, then enter the cells in the order TP, FP, FN, TN.');
+      var hit = (c.alt || []).find(function (x) { return same(x.c); });
+      if (hit) return say('warn', hit.m);
+      if (v[0] + v[2] !== c.D) return say('warn', 'Your SBI column (TP + FN) adds to ' + (v[0] + v[2]) + '. The analysis has ' + c.D + ' infants with SBI.');
+      if (v[1] + v[3] !== c.ND) return say('warn', 'Your no-SBI column (FP + TN) adds to ' + (v[1] + v[3]) + '. The analysis has ' + c.ND + ' infants without SBI.');
+      say('warn', 'The totals are right but the split is not. Recalculate the published percentages from your table and see which one fails.');
+    };
+  });
+})();
+</script>
+</body>
+</html>

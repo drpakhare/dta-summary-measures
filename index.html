@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Data Extraction and Summary Measures for Diagnostic Accuracy Studies</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="widgets/widget.css">
+<script src="widgets/theme.js"></script>
+<style>
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  a.card { display: grid; gap: 6px; align-content: start; background: var(--wash); border-top: 4px solid var(--band); padding: 18px; color: var(--ink); text-decoration: none; }
+  a.card.lab { border-top-color: var(--good); }
+  a.card:hover { background: var(--rule); }
+  a.card:focus-visible { outline: 3px solid var(--warn); outline-offset: 2px; }
+  a.card h2 { margin: 0; }
+  a.card p { margin: 0; color: var(--dim); font-size: 15px; }
+  a.card .go { color: var(--ink); font-weight: 600; font-size: 15px; margin-top: 4px; }
+  ol.steps { margin: 0; padding-left: 1.2em; max-width: 70ch; }
+  ol.steps li { margin-bottom: 4px; }
+  ul.files { margin: 0; padding-left: 1.2em; } ul.files a { color: var(--ink); text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+<header class="band"><div>
+  <p class="kicker">MetaMastery 3.0 · AIIMS Bhopal</p>
+  <h1>Data Extraction and Summary Measures for Diagnostic Accuracy Studies</h1>
+  <p>A 30-minute session on the 2×2 table, sensitivity, specificity, predictive values, likelihood ratios and ROC curves, and how to extract them from published studies. One illustrative review runs through everything: CRP for serious bacterial infection in febrile infants.</p>
+</div></header>
+<main>
+  <section class="cards" aria-label="Session materials">
+    <a class="card" href="slides/dta-summary-measures.html">
+      <span class="label">Slides</span>
+      <h2>A febrile infant has a CRP of 45 mg/L</h2>
+      <p>16 slides. Arrow keys to move, F for full screen.</p>
+      <span class="go">Open the slides →</span>
+    </a>
+    <a class="card" href="handout.html">
+      <span class="label">Handout</span>
+      <h2>Participant handout</h2>
+      <p>Formula sheet, rebuilding a 2×2 table, protocol decisions, the extraction form and further reading. Prints in black and white.</p>
+      <span class="go">Open the handout →</span>
+    </a>
+    <a class="card lab" href="widgets/two-by-two.html">
+      <span class="label">Lab 1</span>
+      <h2>2×2 Table Lab</h2>
+      <p>Every summary measure with its 95% CI. Change the prevalence and the pre-test probability.</p>
+      <span class="go">Open Lab 1 →</span>
+    </a>
+    <a class="card lab" href="widgets/rebuild-lab.html">
+      <span class="label">Lab 2</span>
+      <h2>Rebuild the 2×2 Lab</h2>
+      <p>Four studies that hide their 2×2 table. Rebuild each one and check your answer.</p>
+      <span class="go">Open Lab 2 →</span>
+    </a>
+    <a class="card lab" href="widgets/roc-lab.html">
+      <span class="label">Lab 3</span>
+      <h2>Cut-off and ROC Lab</h2>
+      <p>Move the cut-off, watch the ROC point move, and see what goes wrong when sensitivity and specificity are pooled separately.</p>
+      <span class="go">Open Lab 3 →</span>
+    </a>
+  </section>
+
+  <section class="panel">
+    <h2>What the session covers</h2>
+    <ol class="steps">
+      <li>The 2×2 table as the unit of data in a diagnostic accuracy review</li>
+      <li>Sensitivity and specificity, and why they vary with the spectrum of patients</li>
+      <li>Predictive values and prevalence</li>
+      <li>Likelihood ratios and post-test probability</li>
+      <li>The diagnostic odds ratio and what it hides</li>
+      <li>Cut-offs, ROC curves and the threshold effect across studies</li>
+      <li>Rebuilding a 2×2 table from what a paper reports</li>
+      <li>Decisions for the protocol and the extraction form, linked to QUADAS-3</li>
+    </ol>
+  </section>
+
+  <section class="panel">
+    <h2>Files</h2>
+    <ul class="files">
+      <li><a href="data/crp-dta.csv">crp-dta.csv</a>: the five illustrative 2×2 tables, for the meta-analysis hands-on</li>
+      <li><a href="data/dta-extraction-form.csv">dta-extraction-form.csv</a>: a diagnostic accuracy extraction form, with Study D filled in as an example</li>
+    </ul>
+  </section>
+
+  <footer>AIIMS Bhopal. Slides, labs and handout built with Claude (Anthropic) as drafting and coding assistant, reviewed by the faculty. The CRP review, its five studies and all their numbers are illustrative, constructed for teaching. Sources are listed on the last slide and in the handout.</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,30 @@
+Section,Field,What to record,Example (Study D)
+Study,Study ID,First author and year; link all reports of the same cohort,Study D
+Study,Reviewer,Initials of extractor; second extractor checks independently,
+Study,Design,Single-gate (cross-sectional) or two-gate (diagnostic case-control); prospective or retrospective,"Single-gate, prospective"
+Study,Recruitment,Consecutive or random or convenience,Consecutive
+Study,Setting and dates,"Centre(s), level of care, country, enrolment period","Paediatric ED, two centres"
+Study,Funding and conflicts,Source of funding; manufacturer involvement,
+Participants,Inclusion and exclusion criteria,As stated in the paper,"Febrile infants aged 90 days or less"
+Participants,Age and severity,Age range; clinical severity; prior testing or referral,
+Participants,Prevalence,Number with target condition / number analysed,84/760 (11.1%)
+Index test,Test and method,"Assay, platform, sample type, who performed it",Serum CRP
+Index test,Cut-off,Value and units; prespecified or chosen from the data,"40 mg/L, prespecified"
+Index test,Blinding,Was the index test interpreted without knowledge of the reference standard?,
+Reference standard,Definition,Components of the reference standard,"Blood, urine or CSF culture"
+Reference standard,Blinding,Was the reference standard interpreted without knowledge of the index test?,
+Reference standard,Interval,Time between index test and reference standard,
+Flow,Enrolled,Number enrolled,804
+Flow,Unverified,Number without the reference standard (and their index test results if given),30
+Flow,Inconclusive,Number with inconclusive or failed index test (and their reference results if given),14 (3 with SBI)
+Flow,Other exclusions,Number and reasons,
+Flow,Analysed,Number in the 2x2 table,760
+Results,Cut-off for this table,One row per cut-off and per subgroup,40 mg/L
+Results,TP,True positives,41
+Results,FP,False positives,27
+Results,FN,False negatives,43
+Results,TN,True negatives,649
+Results,Source of 2x2,"Copied from table, back-calculated (state from what), or from authors",Copied from Table 2 (printed with test in columns)
+Results,Check,Recalculated Sn and Sp match the paper? (yes/no),Yes
+QUADAS-3,Support for judgements,Short quotes with page numbers for each domain,
+Notes,Notes,Anything unusual; queries to authors,

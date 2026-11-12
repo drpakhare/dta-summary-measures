@@ -1,0 +1,7 @@
+{
+  "name": "dta-summary-measures",
+  "private": true,
+  "type": "module",
+  "scripts": { "check": "node src/chk.mjs dta-summary-measures" },
+  "devDependencies": { "playwright-core": "^1.50.0" }
+}

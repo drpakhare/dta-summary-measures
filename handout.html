@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Handout: Data extraction and summary measures for diagnostic accuracy studies</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="widgets/widget.css">
+<script src="widgets/theme.js"></script>
+<style>
+  main { max-width: 860px; gap: 26px; }
+  section h2 { font-size: 22px; border-bottom: 2px solid var(--band); padding-bottom: 4px; }
+  section h3 { font: 600 17px/1.3 var(--font-head); margin: 10px 0 4px; }
+  p, li { max-width: 75ch; }
+  ul, ol { margin: 0; padding-left: 1.3em; } li { margin-bottom: 4px; }
+  table { width: 100%; }
+  td, th { vertical-align: top; }
+  .formula { font-family: var(--font-head); background: var(--wash); padding: 8px 12px; border-left: 4px solid var(--band); margin: 6px 0; }
+  .tt td, .tt th { text-align: center; } .tt th:first-child { text-align: left; }
+  .tt td.ok { background: var(--good-wash); } .tt td.err { background: var(--bad-wash); }
+  .print { font: 600 14px var(--font-body); padding: 7px 14px; border-radius: 8px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); cursor: pointer; }
+  .toc { columns: 2; column-gap: 32px; font-size: 15px; }
+  a { color: var(--ink); text-underline-offset: 3px; }
+  @media print {
+    :root, :root[data-theme="dark"] { --band: #000; --ink: #000; --dim: #333; --faint: #555; --rule: #999; --paper: #fff; --wash: #f2f2f2; --good-wash: #eee; --bad-wash: #ddd; --warn-wash: #f2f2f2; --good: #000; --warn: #000; --mark: #000; }
+    header.band { background: #fff; color: #000; border-bottom: 3px solid #000; padding: 0 0 8px; }
+    header.band .kicker { opacity: 1; }
+    .theme-toggle, .print, .noprint { display: none !important; }
+    body { font-size: 11pt; }
+    main { padding: 0; max-width: none; }
+    section { break-inside: auto; } h2, h3 { break-after: avoid; } table, .formula, .claim { break-inside: avoid; }
+    a { text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<header class="band"><div>
+  <p class="kicker"><a href="index.html">MetaMastery 3.0 · DTA summary measures</a> · Participant handout</p>
+  <h1>Data extraction and summary measures for diagnostic accuracy studies</h1>
+  <p>Reference notes for the session on 13 November 2026: the 2×2 table, sensitivity, specificity, predictive values, likelihood ratios, the diagnostic odds ratio and ROC curves, and how to extract them from published studies.</p>
+</div></header>
+<main>
+  <div class="row noprint"><button class="print" onclick="window.print()">Print or save as PDF</button><span class="note">Prints in black and white on A4.</span></div>
+
+  <section>
+    <h2>Contents</h2>
+    <ol class="toc">
+      <li><a href="#s1">The running example</a></li>
+      <li><a href="#s2">The 2×2 table</a></li>
+      <li><a href="#s3">Formula sheet</a></li>
+      <li><a href="#s4">Predictive values and prevalence</a></li>
+      <li><a href="#s5">Likelihood ratios</a></li>
+      <li><a href="#s6">The diagnostic odds ratio</a></li>
+      <li><a href="#s7">Cut-offs, ROC curves and the threshold effect</a></li>
+      <li><a href="#s8">Rebuilding a 2×2 table</a></li>
+      <li><a href="#s9">Decisions for your protocol</a></li>
+      <li><a href="#s10">The extraction form</a></li>
+      <li><a href="#s11">Common errors checklist</a></li>
+      <li><a href="#s12">Dataset for the 4 pm hands-on</a></li>
+      <li><a href="#s13">Further reading</a></li>
+    </ol>
+  </section>
+
+  <section id="s1">
+    <h2>1. The running example</h2>
+    <p>The session, the labs and this handout use one illustrative review: <strong>serum C-reactive protein (CRP) for serious bacterial infection (SBI) in febrile infants aged 90 days or less</strong>, with blood, urine or CSF culture as the reference standard. Five studies (A to E) use cut-offs of 20, 40 and 80 mg/L.</p>
+    <p class="claim warn">The five studies and all their numbers are invented for teaching. They do not describe real studies and must not be used for clinical decisions.</p>
+    <p>A diagnostic accuracy review question has four parts: the <strong>participants</strong> (who would be tested, in which setting), the <strong>index test</strong>, the <strong>target condition</strong>, and the <strong>reference standard</strong> (the best available way of deciding who has the target condition).</p>
+  </section>
+
+  <section id="s2">
+    <h2>2. The 2×2 table</h2>
+    <p>The unit of data in a diagnostic accuracy review is a 2×2 table for each study (and for each cut-off). The index test result goes in the rows; the reference standard result goes in the columns.</p>
+    <div class="scroll"><table class="tt">
+      <tr><th>Study A, CRP cut-off 20 mg/L</th><th>SBI</th><th>No SBI</th><th>Total</th></tr>
+      <tr><th>CRP ≥ 20 (positive)</th><td class="ok">TP = 62</td><td class="err">FP = 83</td><td>145</td></tr>
+      <tr><th>CRP &lt; 20 (negative)</th><td class="err">FN = 15</td><td class="ok">TN = 480</td><td>495</td></tr>
+      <tr><th>Total</th><td>77</td><td>563</td><td>640</td></tr>
+    </table></div>
+    <ul>
+      <li>RevMan Web and most R packages (mada, meta, metadta) take the cells in the order <strong>TP, FP, FN, TN</strong>.</li>
+      <li>Many papers print the table transposed, with the test in the columns. Swapping FP and FN is the commonest extraction error. Always check that TP + FN equals the number with the target condition.</li>
+      <li>Record a zero cell as zero. Software adds 0.5 where it needs to.</li>
+    </ul>
+  </section>
+
+  <section id="s3">
+    <h2>3. Formula sheet</h2>
+    <div class="scroll"><table>
+      <tr><th>Measure</th><th>Formula</th><th class="num">Study A</th><th>What it answers</th><th>Pool it?</th></tr>
+      <tr><td>Sensitivity</td><td>TP / (TP + FN)</td><td class="num">80.5%</td><td>Of those with the condition, how many test positive?</td><td>Yes, jointly with specificity</td></tr>
+      <tr><td>Specificity</td><td>TN / (TN + FP)</td><td class="num">85.3%</td><td>Of those without it, how many test negative?</td><td>Yes, jointly with sensitivity</td></tr>
+      <tr><td>Positive predictive value</td><td>TP / (TP + FP)</td><td class="num">42.8%</td><td>Given a positive test, chance of the condition</td><td>No. Derive at a stated prevalence</td></tr>
+      <tr><td>Negative predictive value</td><td>TN / (TN + FN)</td><td class="num">97.0%</td><td>Given a negative test, chance of no condition</td><td>No. Derive at a stated prevalence</td></tr>
+      <tr><td>Positive likelihood ratio</td><td>Sn / (1 − Sp)</td><td class="num">5.46</td><td>How much a positive result raises the odds</td><td>No. Derive from pooled Sn and Sp</td></tr>
+      <tr><td>Negative likelihood ratio</td><td>(1 − Sn) / Sp</td><td class="num">0.23</td><td>How much a negative result lowers the odds</td><td>No. Derive from pooled Sn and Sp</td></tr>
+      <tr><td>Diagnostic odds ratio</td><td>(TP × TN) / (FP × FN) = LR+ / LR−</td><td class="num">23.9</td><td>Overall discrimination, in one number</td><td>Used inside HSROC models; never report alone</td></tr>
+      <tr><td>Prevalence</td><td>(TP + FN) / N</td><td class="num">12.0%</td><td>Proportion with the condition in the study</td><td>Extract; it explains PPV and NPV</td></tr>
+      <tr><td>Youden index</td><td>Sn + Sp − 1</td><td class="num">0.66</td><td>Single-cut-off summary; 0 is useless, 1 perfect</td><td>No</td></tr>
+    </table></div>
+    <p class="note">Study A 95% confidence intervals (Wilson score for proportions, log method for ratios): sensitivity 70.3 to 87.8%; specificity 82.1 to 87.9%; PPV 35.0 to 50.9%; NPV 95.1 to 98.2%; LR+ 4.35 to 6.85; LR− 0.14 to 0.36; DOR 13.0 to 44.0. Overall accuracy, (TP + TN) / N, is not listed because it depends on prevalence and hides which kind of error a test makes.</p>
+  </section>
+
+  <section id="s4">
+    <h2>4. Predictive values and prevalence</h2>
+    <p>Sensitivity and specificity condition on the truth (read down the columns). Predictive values condition on the test result (read across the rows), so they change with prevalence even when the test does not.</p>
+    <div class="formula">PPV = Sn × p / [Sn × p + (1 − Sp) × (1 − p)] &nbsp;&nbsp;·&nbsp;&nbsp; NPV = Sp × (1 − p) / [Sp × (1 − p) + (1 − Sn) × p]</div>
+    <div class="scroll"><table>
+      <tr><th>Prevalence (p)</th><th class="num">PPV</th><th class="num">NPV</th><th class="num">Per 1000 tested: TP / FN / FP / TN</th></tr>
+      <tr><td>2%</td><td class="num">10.0%</td><td class="num">99.5%</td><td class="num">16 / 4 / 144 / 836</td></tr>
+      <tr><td>5%</td><td class="num">22.3%</td><td class="num">98.8%</td><td class="num">40 / 10 / 140 / 810</td></tr>
+      <tr><td>12% (Study A)</td><td class="num">42.8%</td><td class="num">97.0%</td><td class="num">97 / 23 / 130 / 750</td></tr>
+      <tr><td>30%</td><td class="num">70.1%</td><td class="num">91.1%</td><td class="num">242 / 58 / 103 / 597</td></tr>
+    </table></div>
+    <p class="note">All rows use Study A's sensitivity 80.5% and specificity 85.3%. The "per 1000 tested" format is the one used in GRADE summary of findings tables for tests.</p>
+    <p>Sensitivity and specificity are not fixed either. They vary with the <strong>spectrum</strong> of patients (severity, age, prior testing, setting). Extract these details so that heterogeneity can be explored.</p>
+  </section>
+
+  <section id="s5">
+    <h2>5. Likelihood ratios</h2>
+    <div class="formula">Pre-test odds = p / (1 − p) &nbsp;→&nbsp; Post-test odds = pre-test odds × LR &nbsp;→&nbsp; Post-test probability = odds / (1 + odds)</div>
+    <p>Study A, pre-test probability 12% (odds 0.137): a positive CRP (LR+ 5.46) gives odds 0.75, a probability of 43%; a negative CRP (LR− 0.23) gives odds 0.031, a probability of 3.0%. These equal the PPV and 1 − NPV, as they must when the pre-test probability is the study's prevalence.</p>
+    <div class="scroll"><table>
+      <tr><th>LR+</th><th>LR−</th><th>Typical effect on probability</th></tr>
+      <tr><td>above 10</td><td>below 0.1</td><td>Large, often decisive</td></tr>
+      <tr><td>5 to 10</td><td>0.1 to 0.2</td><td>Moderate</td></tr>
+      <tr><td>2 to 5</td><td>0.2 to 0.5</td><td>Small, sometimes useful</td></tr>
+      <tr><td>1 to 2</td><td>0.5 to 1</td><td>Rarely matters</td></tr>
+    </table></div>
+    <p class="note">A rough guide, not a rule: the right threshold depends on what a missed diagnosis or a false alarm costs. In a meta-analysis, calculate summary likelihood ratios from the pooled sensitivity and specificity of the bivariate model; do not pool likelihood ratios directly.</p>
+  </section>
+
+  <section id="s6">
+    <h2>6. The diagnostic odds ratio</h2>
+    <p>The DOR is the odds of a positive test in those with the condition divided by the odds of a positive test in those without it. It ranges from 0 to infinity; 1 means the test does not discriminate. It is relatively stable across cut-offs, which makes it useful inside HSROC models and for comparing tests. But a test with sensitivity 95% and specificity 56%, and one with 56% and 95%, both have a DOR of about 24: one is a rule-out test, the other a rule-in test. Always report sensitivity and specificity alongside it.</p>
+  </section>
+
+  <section id="s7">
+    <h2>7. Cut-offs, ROC curves and the threshold effect</h2>
+    <ul>
+      <li>For a continuous test, each cut-off gives its own 2×2 table. Lowering the cut-off raises sensitivity and lowers specificity.</li>
+      <li>The <strong>ROC curve</strong> plots sensitivity against 1 − specificity for every cut-off. The <strong>area under the curve</strong> (AUC) is the probability that a random person with the condition has a more abnormal result than a random person without it. In the illustrative CRP model, AUC = 0.89.</li>
+      <li>The <strong>Youden index</strong> picks the cut-off that maximises Sn + Sp − 1 (near 18 mg/L here). It weighs a missed case and a false alarm equally, which is rarely true clinically.</li>
+      <li>Across studies, different cut-offs make sensitivity and specificity <strong>negatively correlated</strong>: the <strong>threshold effect</strong>. Pooling them in two separate meta-analyses ignores this. In our five studies, separate pooling gives sensitivity 60% and specificity 88%, a point below the curve the studies follow (which gives about 73% sensitivity at 88% specificity).</li>
+      <li>Use the <strong>bivariate random-effects model</strong> (Reitsma 2005) for a summary sensitivity and specificity at a common cut-off, or the <strong>HSROC model</strong> (Rutter and Gatsonis 2001) for a summary ROC curve when cut-offs vary. The two are mathematically equivalent when there are no covariates. Covered in the 4 pm session.</li>
+    </ul>
+  </section>
+
+  <section id="s8">
+    <h2>8. Rebuilding a 2×2 table from what a paper reports</h2>
+    <p>You need the number with the target condition (D) and without it (ND) in the analysis, plus two accuracy measures.</p>
+    <div class="scroll"><table>
+      <tr><th>The paper gives</th><th>Calculate</th></tr>
+      <tr><td>Sn, Sp, D, ND</td><td>TP = Sn × D; FN = D − TP; TN = Sp × ND; FP = ND − TN</td></tr>
+      <tr><td>Sn, PPV, D, N</td><td>TP = Sn × D; FN = D − TP; FP = TP / PPV − TP; TN = (N − D) − FP</td></tr>
+      <tr><td>Sn, Sp, N and prevalence</td><td>D = prevalence × N; then as row 1</td></tr>
+      <tr><td>Sp, NPV, ND, N</td><td>TN = Sp × ND; FP = ND − TN; FN = TN / NPV − TN; TP = (N − ND) − FN</td></tr>
+      <tr><td>LR+, LR−, D, ND</td><td>Sn = (1 − LR−) × LR+ / (LR+ − LR−); Sp = (LR+ − 1) / (LR+ − LR−); then as row 1</td></tr>
+    </table></div>
+    <h3>Worked example: Study B</h3>
+    <p>"1100 infants, 99 with SBI. At 20 mg/L, sensitivity 70.7% and specificity 85.3%." TP = 0.707 × 99 = 69.99, so 70; FN = 29. TN = 0.853 × 1001 = 853.9, so 854; FP = 147.</p>
+    <p class="claim good">Then check: 70/99 = 70.7% and 854/1001 = 85.3%. If the published percentages do not come back, the table is wrong. Record that the table was back-calculated.</p>
+    <p>If only sensitivity and specificity are given without D and ND, or only an AUC, the table cannot be rebuilt: contact the authors, and report the study as not usable in the review if they do not reply.</p>
+  </section>
+
+  <section id="s9">
+    <h2>9. Decisions to write into your protocol before you extract</h2>
+    <div class="scroll"><table>
+      <tr><th>Situation</th><th>Suggested rule</th></tr>
+      <tr><td>Inconclusive or failed index test results</td><td>Extract the number and, if reported, their reference results. Main analysis as reported; sensitivity analysis counting them as positive and as negative.</td></tr>
+      <tr><td>Participants without the reference standard (partial verification)</td><td>Extract the number and their index test results. Never assume they were negative.</td></tr>
+      <tr><td>Different reference standards for different participants (differential verification)</td><td>Record which participants got which reference standard; it feeds the QUADAS-3 judgement.</td></tr>
+      <tr><td>Several cut-offs reported</td><td>Extract a 2×2 table for every cut-off. Prespecify which one enters the main analysis (for example the study's prespecified cut-off, or the one closest to a common value).</td></tr>
+      <tr><td>Unit of analysis (episodes, samples, lesions, eyes)</td><td>Use one per participant; prefer participant-level data.</td></tr>
+      <tr><td>Several readers or several versions of the test</td><td>Prespecify: one reader (for example the most experienced), the consensus, or the average.</td></tr>
+      <tr><td>Overlapping cohorts or multiple reports</td><td>Link reports of the same study and count the participants once.</td></tr>
+      <tr><td>Two-gate (diagnostic case-control) designs</td><td>Include or exclude by protocol; if included, flag for sensitivity analysis, as they overestimate accuracy.</td></tr>
+    </table></div>
+    <p><strong>QUADAS-3</strong> (Whiting et al., Ann Intern Med 2026) asks you to draw a flow diagram for each study, identify the accuracy estimates you will use, and assess risk of bias for each estimate rather than for the study as a whole. Its new <strong>Analysis</strong> domain replaces Flow and Timing. Your extraction form must collect the numbers it needs.</p>
+  </section>
+
+  <section id="s10">
+    <h2>10. The extraction form</h2>
+    <p>A ready-to-use form is in <a href="data/dta-extraction-form.csv">data/dta-extraction-form.csv</a> (opens in Excel or Google Sheets). Its sections:</p>
+    <div class="scroll"><table>
+      <tr><th>Section</th><th>Fields</th></tr>
+      <tr><td>Study</td><td>ID and linked reports; extractor; design (single-gate or two-gate; prospective or retrospective); recruitment (consecutive, random, convenience); setting, country, dates; funding and conflicts</td></tr>
+      <tr><td>Participants</td><td>Inclusion and exclusion criteria; age, severity, prior tests or referral; prevalence</td></tr>
+      <tr><td>Index test</td><td>Test, assay or platform, sample, operator; cut-off and units; prespecified or data-driven; blinding to the reference standard</td></tr>
+      <tr><td>Reference standard</td><td>Definition and components; blinding to the index test; interval between tests</td></tr>
+      <tr><td>Flow</td><td>Enrolled; unverified; inconclusive; other exclusions with reasons; analysed</td></tr>
+      <tr><td>Results</td><td>One row per cut-off and subgroup: TP, FP, FN, TN; source (copied, back-calculated, from authors); check that recalculated Sn and Sp match</td></tr>
+      <tr><td>QUADAS-3</td><td>Short supporting quotes with page numbers for each judgement</td></tr>
+    </table></div>
+    <p>Two reviewers extract independently and resolve disagreements; pilot the form on two or three studies first.</p>
+  </section>
+
+  <section id="s11">
+    <h2>11. Common errors checklist</h2>
+    <ul>
+      <li>FP and FN swapped because the paper printed the table transposed.</li>
+      <li>Column totals do not equal the number with and without the target condition.</li>
+      <li>Back-calculated tables not checked against the published percentages.</li>
+      <li>Cut-off not recorded, or the "best" cut-off chosen from each study.</li>
+      <li>Inconclusive or unverified participants silently dropped or counted as negative.</li>
+      <li>Episodes or lesions counted as if they were patients.</li>
+      <li>The same cohort included twice from two publications.</li>
+      <li>Predictive values pooled across studies with different prevalence.</li>
+      <li>Sensitivity and specificity pooled in two separate univariate meta-analyses.</li>
+      <li>DOR or AUC reported without sensitivity and specificity.</li>
+    </ul>
+  </section>
+
+  <section id="s12">
+    <h2>12. Dataset for the 4 pm hands-on</h2>
+    <p>The five illustrative studies, ready to type into RevMan Web or read into R: <a href="data/crp-dta.csv">data/crp-dta.csv</a>.</p>
+    <div class="scroll"><table>
+      <tr><th>Study</th><th class="num">Cut-off (mg/L)</th><th class="num">TP</th><th class="num">FP</th><th class="num">FN</th><th class="num">TN</th><th class="num">Sens.</th><th class="num">Spec.</th></tr>
+      <tr><td>A</td><td class="num">20</td><td class="num">62</td><td class="num">83</td><td class="num">15</td><td class="num">480</td><td class="num">80.5%</td><td class="num">85.3%</td></tr>
+      <tr><td>B</td><td class="num">20</td><td class="num">70</td><td class="num">147</td><td class="num">29</td><td class="num">854</td><td class="num">70.7%</td><td class="num">85.3%</td></tr>
+      <tr><td>C</td><td class="num">40</td><td class="num">47</td><td class="num">14</td><td class="num">29</td><td class="num">330</td><td class="num">61.8%</td><td class="num">95.9%</td></tr>
+      <tr><td>D</td><td class="num">40</td><td class="num">41</td><td class="num">27</td><td class="num">43</td><td class="num">649</td><td class="num">48.8%</td><td class="num">96.0%</td></tr>
+      <tr><td>E</td><td class="num">80</td><td class="num">19</td><td class="num">2</td><td class="num">38</td><td class="num">321</td><td class="num">33.3%</td><td class="num">99.4%</td></tr>
+    </table></div>
+    <p class="note">Study E also reports 20 mg/L (45, 47, 12, 276) and 40 mg/L (33, 13, 24, 310) for a multiple-threshold analysis.</p>
+  </section>
+
+  <section id="s13">
+    <h2>13. Further reading</h2>
+    <ol class="note" style="font-size:15px">
+      <li>Deeks JJ, Bossuyt PM, Leeflang MM, Takwoingi Y, eds. Cochrane Handbook for Systematic Reviews of Diagnostic Test Accuracy. Version 2.0. Cochrane; 2023. training.cochrane.org/handbook-diagnostic-test-accuracy</li>
+      <li>Whiting PF, Tomlinson E, Rutjes AWS, et al. QUADAS-3: a revised tool for the quality assessment of diagnostic test accuracy studies. Ann Intern Med. 2026. doi:10.7326/ANNALS-25-02104</li>
+      <li>Reitsma JB, Glas AS, Rutjes AWS, et al. Bivariate analysis of sensitivity and specificity produces informative summary measures in diagnostic reviews. J Clin Epidemiol. 2005;58:982-90.</li>
+      <li>Rutter CM, Gatsonis CA. A hierarchical regression approach to meta-analysis of diagnostic test accuracy evaluations. Stat Med. 2001;20:2865-84.</li>
+      <li>Glas AS, Lijmer JG, Prins MH, et al. The diagnostic odds ratio: a single indicator of test performance. J Clin Epidemiol. 2003;56:1129-35.</li>
+      <li>Altman DG, Bland JM. Diagnostic tests 1: sensitivity and specificity. BMJ. 1994;308:1552.</li>
+      <li>Altman DG, Bland JM. Diagnostic tests 2: predictive values. BMJ. 1994;309:102.</li>
+      <li>Deeks JJ, Altman DG. Diagnostic tests 4: likelihood ratios. BMJ. 2004;329:168-9.</li>
+      <li>McInnes MDF, Moher D, Thombs BD, et al. The PRISMA-DTA statement. JAMA. 2018;319:388-96.</li>
+      <li>Bossuyt PM, Reitsma JB, Bruns DE, et al. STARD 2015: an updated list of essential items for reporting diagnostic accuracy studies. BMJ. 2015;351:h5527.</li>
+    </ol>
+  </section>
+
+  <footer>AIIMS Bhopal. Handout, slides and labs prepared with Claude (Anthropic) as drafting and coding assistant, reviewed by the faculty. The CRP review and its five studies are illustrative, constructed for teaching.</footer>
+</main>
+</body>
+</html>

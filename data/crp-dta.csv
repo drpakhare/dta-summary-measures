@@ -1,0 +1,6 @@
+Study,Setting,Threshold_mg_per_L,TP,FP,FN,TN
+Study A,"Paediatric emergency department, single centre",20,62,83,15,480
+Study B,"Three paediatric emergency departments",20,70,147,29,854
+Study C,"Neonatal unit, infants up to 28 days",40,47,14,29,330
+Study D,"Paediatric emergency department, two centres",40,41,27,43,649
+Study E,"General paediatric admissions",80,19,2,38,321

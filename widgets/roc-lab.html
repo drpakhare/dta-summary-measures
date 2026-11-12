@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cut-off and ROC Lab</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="widget.css">
+<script src="theme.js"></script>
+<script src="dta.js"></script>
+<script src="crp-data.js"></script>
+<style>
+  .figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; align-items: start; }
+  svg.f { width: 100%; height: auto; display: block; }
+  svg.f .axis { stroke: var(--ink); stroke-width: 1.5; }
+  svg.f .grid { stroke: var(--rule); }
+  svg.f .tick { font-size: 13px; fill: var(--dim); }
+  svg.f .nd { fill: none; stroke: var(--mark); stroke-width: 2; }
+  svg.f .dz { fill: none; stroke: var(--bad); stroke-width: 2; }
+  svg.f .ndpos { fill: var(--mark); opacity: .25; }
+  svg.f .dzpos { fill: var(--bad); opacity: .3; }
+  svg.f .cut { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 5 4; }
+  svg.f .curve { fill: none; stroke: var(--faint); stroke-width: 2.5; }
+  svg.f .chance { stroke: var(--faint); stroke-dasharray: 5 5; }
+  svg.f .me { fill: var(--warn); stroke: var(--paper); stroke-width: 2; }
+  svg.f .pt { stroke: var(--paper); stroke-width: 1.5; }
+  svg.f .t20 { fill: #5b7bd5; } svg.f .t40 { fill: var(--mark); } svg.f .t80 { fill: var(--warn); }
+  svg.f .pl { font-size: 14px; font-weight: 600; fill: var(--ink); }
+  svg.f .naive { stroke: var(--bad); stroke-width: 3; }
+  svg.f .lbl { font-size: 14px; font-weight: 600; }
+  input[type=range] { width: min(520px, 100%); accent-color: var(--band); }
+  .big { font: 600 22px var(--font-head); font-variant-numeric: tabular-nums; }
+  .key { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin: 0 4px 0 10px; vertical-align: -1px; }
+</style>
+</head>
+<body>
+<header class="band"><div>
+  <p class="kicker"><a href="../index.html">MetaMastery 3.0 · DTA summary measures</a> · Lab 3</p>
+  <h1>Cut-off and ROC Lab</h1>
+  <p>Move the CRP cut-off and watch sensitivity and specificity trade against each other. Then see why five studies at different cut-offs must be pooled together, not one measure at a time.</p>
+</div></header>
+<main>
+  <section class="panel">
+    <h2>1. Choose a cut-off</h2>
+    <div class="row"><label for="cut" class="label">CRP cut-off</label><input id="cut" type="range" min="0" max="1000" step="1"><span class="big" id="cutv"></span></div>
+    <div class="row" role="group" aria-label="Jump to a cut-off">
+      <button class="chip" data-t="20">20 mg/L</button><button class="chip" data-t="40">40 mg/L</button><button class="chip" data-t="80">80 mg/L</button><button class="chip" data-t="youden">Highest Youden index</button>
+    </div>
+    <div class="figs">
+      <svg class="f" id="dens" viewBox="0 0 460 260" role="img" aria-label="CRP distributions with the cut-off"></svg>
+      <svg class="f" id="roc" viewBox="0 0 340 300" role="img" aria-label="ROC curve with the current cut-off"></svg>
+    </div>
+    <p class="note"><span class="key" style="background:var(--bad)"></span>infants with SBI <span class="key" style="background:var(--mark)"></span>infants without SBI. Shaded areas are test-positive: to the right of the cut-off. Area under the ROC curve: <strong id="auc"></strong>.</p>
+    <div class="stats" aria-live="polite">
+      <div class="stat"><div class="n" id="sn"></div><div class="l">sensitivity</div></div>
+      <div class="stat"><div class="n" id="sp"></div><div class="l">specificity</div></div>
+      <div class="stat"><div class="n" id="lrp"></div><div class="l">LR+</div></div>
+      <div class="stat"><div class="n" id="lrn"></div><div class="l">LR−</div></div>
+      <div class="stat"><div class="n" id="yj"></div><div class="l">Youden index (Sn + Sp − 1)</div></div>
+    </div>
+    <h2 style="margin-top:6px">Per 1000 febrile infants, 10% with SBI</h2>
+    <div class="stats">
+      <div class="stat bad"><div class="n" id="miss"></div><div class="l">infants with SBI missed</div></div>
+      <div class="stat warn"><div class="n" id="fa"></div><div class="l">false alarms: infants without SBI flagged</div></div>
+    </div>
+    <p class="claim" id="msg1"></p>
+  </section>
+
+  <section class="panel">
+    <h2>2. Five studies, three cut-offs</h2>
+    <div class="row">
+      <label class="check"><input type="checkbox" id="showCurve" checked> Show the curve the studies follow</label>
+      <label class="check"><input type="checkbox" id="showNaive"> Pool sensitivity and specificity separately</label>
+    </div>
+    <div class="figs">
+      <svg class="f" id="sroc" viewBox="0 0 340 300" role="img" aria-label="Five studies in ROC space"></svg>
+      <div class="scroll"><table id="stab"></table>
+        <p class="note"><span class="key t20" style="background:#5b7bd5"></span>20 mg/L <span class="key" style="background:var(--mark)"></span>40 mg/L <span class="key" style="background:var(--warn)"></span>80 mg/L. Circle size shows study size.</p></div>
+    </div>
+    <p class="claim" id="msg2"></p>
+  </section>
+  <footer>Illustrative CRP model and studies, constructed for teaching. CRP in each group is modelled as log-normal. The separate pooling shown here is a simple fixed-effect logit average, for illustration; use the bivariate or HSROC model in a real review.</footer>
+</main>
+<script>
+(function () {
+  var C = window.CRP, M = C.model, D = window.DTA, $ = function (i) { return document.getElementById(i); };
+  var NS = 'http://www.w3.org/2000/svg';
+  var LO = Math.log(2), HI = Math.log(300);
+  function sn(t) { return 1 - D.phi((Math.log(t) - M.mu1) / M.sd1); }
+  function sp(t) { return D.phi((Math.log(t) - M.mu0) / M.sd0); }
+  function pdf(x, m, s) { return Math.exp(-0.5 * Math.pow((x - m) / s, 2)) / (s * Math.sqrt(2 * Math.PI)); }
+  function el(tag, attrs, parent) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  function txt(parent, x, y, s, cls, anchor) { var t = el('text', { x: x, y: y, class: cls || 'tick', 'text-anchor': anchor || 'middle' }, parent); t.textContent = s; return t; }
+  $('auc').textContent = M.auc.toFixed(2);
+  // Youden optimum
+  var best = { j: -1, t: 0 };
+  for (var i = 20; i < 3000; i++) { var t = i / 10, j = sn(t) + sp(t) - 1; if (j > best.j) best = { j: j, t: t }; }
+
+  // density chart
+  var dens = $('dens'), W = 460, H = 260, L = 20, R = 15, T = 15, B = 45;
+  var lo = Math.log(0.5), hi = Math.log(1000);
+  var X = function (v) { return L + (v - lo) / (hi - lo) * (W - L - R); };
+  var ymax = Math.max(pdf(M.mu0, M.mu0, M.sd0), pdf(M.mu1, M.mu1, M.sd1)) * 1.1;
+  var Y = function (v) { return H - B - v / ymax * (H - T - B); };
+  function curvePts(m, s, from) {
+    var a = [], n = 200, start = from == null ? lo : from;
+    for (var k = 0; k <= n; k++) { var x = start + (hi - start) * k / n; a.push(X(x).toFixed(1) + ',' + Y(pdf(x, m, s)).toFixed(1)); }
+    return a;
+  }
+  var ndpos = el('path', { class: 'ndpos' }, dens), dzpos = el('path', { class: 'dzpos' }, dens);
+  el('polyline', { class: 'nd', points: curvePts(M.mu0, M.sd0).join(' ') }, dens);
+  el('polyline', { class: 'dz', points: curvePts(M.mu1, M.sd1).join(' ') }, dens);
+  el('line', { class: 'axis', x1: L, x2: W - R, y1: Y(0), y2: Y(0) }, dens);
+  [1, 5, 20, 80, 300].forEach(function (v) { txt(dens, X(Math.log(v)), Y(0) + 18, v); });
+  txt(dens, W / 2, H - 6, 'CRP, mg/L (log scale)');
+  var cutL = el('line', { class: 'cut', y1: T, y2: Y(0) }, dens);
+
+  // ROC frame helper
+  function frame(svg) {
+    var W2 = 340, H2 = 300, l = 50, r = 12, t = 12, b = 45;
+    var x = function (f) { return l + f * (W2 - l - r); }, y = function (s) { return H2 - b - s * (H2 - t - b); };
+    [0.25, 0.5, 0.75, 1].forEach(function (g) {
+      el('line', { class: 'grid', x1: x(0), x2: x(1), y1: y(g), y2: y(g) }, svg);
+      el('line', { class: 'grid', x1: x(g), x2: x(g), y1: y(0), y2: y(1) }, svg);
+    });
+    el('line', { class: 'axis', x1: x(0), x2: x(1), y1: y(0), y2: y(0) }, svg);
+    el('line', { class: 'axis', x1: x(0), x2: x(0), y1: y(0), y2: y(1) }, svg);
+    el('line', { class: 'chance', x1: x(0), x2: x(1), y1: y(0), y2: y(1) }, svg);
+    [0, 0.5, 1].forEach(function (v) { txt(svg, x(v), y(0) + 17, v); txt(svg, x(0) - 6, y(v) + 4, v, 'tick', 'end'); });
+    txt(svg, (x(0) + x(1)) / 2, H2 - 8, '1 − specificity');
+    var yl = txt(svg, 14, (y(0) + y(1)) / 2, 'Sensitivity'); yl.setAttribute('transform', 'rotate(-90 14 ' + (y(0) + y(1)) / 2 + ')');
+    var pts = [];
+    for (var k = -60; k < 200; k++) { var tt = Math.exp(k / 25); pts.push(x(1 - sp(tt)).toFixed(1) + ',' + y(sn(tt)).toFixed(1)); }
+    var cv = el('polyline', { class: 'curve', points: pts.join(' ') }, svg);
+    return { x: x, y: y, curve: cv };
+  }
+  var roc = frame($('roc'));
+  var me = el('circle', { class: 'me', r: 8 }, $('roc'));
+
+  var cut = $('cut');
+  function tFromSlider() { return Math.exp(LO + (HI - LO) * cut.value / 1000); }
+  function setT(t) { cut.value = Math.round((Math.log(t) - LO) / (HI - LO) * 1000); update(); }
+  [].forEach.call(document.querySelectorAll('[data-t]'), function (b) {
+    b.addEventListener('click', function () { setT(b.dataset.t === 'youden' ? best.t : +b.dataset.t); });
+  });
+  cut.addEventListener('input', update);
+  function update() {
+    var t = tFromSlider(), lt = Math.log(t), s1 = sn(t), s0 = sp(t);
+    $('cutv').textContent = (t < 10 ? t.toFixed(1) : Math.round(t)) + ' mg/L';
+    cutL.setAttribute('x1', X(lt)); cutL.setAttribute('x2', X(lt));
+    function area(m, s) { var p = curvePts(m, s, lt); return 'M' + X(lt).toFixed(1) + ',' + Y(0) + ' L' + p.join(' L') + ' L' + X(hi).toFixed(1) + ',' + Y(0) + ' Z'; }
+    ndpos.setAttribute('d', area(M.mu0, M.sd0)); dzpos.setAttribute('d', area(M.mu1, M.sd1));
+    me.setAttribute('cx', roc.x(1 - s0)); me.setAttribute('cy', roc.y(s1));
+    var lrp = s1 / (1 - s0), lrn = (1 - s1) / s0;
+    $('sn').textContent = D.pct(s1, 0); $('sp').textContent = D.pct(s0, 0);
+    $('lrp').textContent = D.num(lrp); $('lrn').textContent = D.num(lrn); $('yj').textContent = (s1 + s0 - 1).toFixed(2);
+    var miss = Math.round(100 * (1 - s1)), fa = Math.round(900 * (1 - s0));
+    $('miss').textContent = miss; $('fa').textContent = fa;
+    var m = $('msg1');
+    m.textContent = 'At ' + $('cutv').textContent + ', 1000 infants give ' + miss + ' missed infections and ' + fa + ' false alarms. ' +
+      (Math.abs(t - best.t) < 1.5 ? 'This is the Youden cut-off. It counts one missed infection as no worse than one false alarm. Is that true for febrile infants?' :
+       'Lower the cut-off and you miss fewer infections but flag more well infants. Raise it and the reverse happens.');
+    m.className = 'claim' + (miss > 30 ? ' warn' : '');
+  }
+  setT(20);
+
+  // Part 2
+  var sroc = frame($('sroc')), svg2 = $('sroc');
+  var studies = C.studies.map(function (s) { var r = D.measures(s.TP, s.FP, s.FN, s.TN); r.s = s; return r; });
+  studies.forEach(function (r) {
+    var rad = 5 + 7 * Math.sqrt(r.s.N / 1100), cx = sroc.x(1 - r.sp), cy = sroc.y(r.sn);
+    el('circle', { class: 'pt t' + r.s.threshold, cx: cx, cy: cy, r: rad }, svg2);
+    if (r.s.id === 'C') txt(svg2, cx, cy - rad - 4, r.s.id, 'pl', 'middle');
+    else txt(svg2, cx + rad + 4, cy + 5, r.s.id, 'pl', 'start');
+  });
+  function pool(pairs) { var a = 0, b = 0; pairs.forEach(function (p) { var v = 1 / p[0] + 1 / (p[1] - p[0]); a += Math.log(p[0] / (p[1] - p[0])) / v; b += 1 / v; }); return 1 / (1 + Math.exp(-a / b)); }
+  var psn = pool(C.studies.map(function (s) { return [s.TP, s.TP + s.FN]; }));
+  var psp = pool(C.studies.map(function (s) { return [s.TN, s.TN + s.FP]; }));
+  var nx = sroc.x(1 - psp), ny = sroc.y(psn);
+  var naive = el('g', {}, svg2);
+  el('path', { class: 'naive', d: 'M' + (nx - 7) + ',' + (ny - 7) + 'L' + (nx + 7) + ',' + (ny + 7) + 'M' + (nx - 7) + ',' + (ny + 7) + 'L' + (nx + 7) + ',' + (ny - 7) }, naive);
+  var nl = txt(naive, nx + 10, ny + 20, 'pooled separately', 'lbl', 'start'); nl.style.fill = 'var(--bad)';
+  // curve sensitivity at the naive specificity
+  var tAt = Math.exp(M.mu0 + M.sd0 * invPhi(psp)), snAt = sn(tAt);
+  function invPhi(p) { var a = -8, b = 8; for (var k = 0; k < 60; k++) { var mid = (a + b) / 2; if (D.phi(mid) < p) a = mid; else b = mid; } return (a + b) / 2; }
+  var P = function (x) { return D.pct(x); };
+  $('stab').innerHTML = '<tr><th>Study</th><th class="num">Cut-off</th><th class="num">Sensitivity</th><th class="num">Specificity</th></tr>' +
+    studies.map(function (r) { return '<tr><td>' + r.s.id + '</td><td class="num">' + r.s.threshold + '</td><td class="num">' + D.pct(r.sn, 0) + ' <span class="note">(' + D.ci(r.snCI[0], r.snCI[1], function (x) { return D.pct(x, 0); }) + ')</span></td><td class="num">' + D.pct(r.sp, 0) + ' <span class="note">(' + D.ci(r.spCI[0], r.spCI[1], function (x) { return D.pct(x, 0); }) + ')</span></td></tr>'; }).join('');
+  function upd2() {
+    sroc.curve.style.display = $('showCurve').checked ? '' : 'none';
+    naive.style.display = $('showNaive').checked ? '' : 'none';
+    var m = $('msg2');
+    if ($('showNaive').checked) {
+      m.className = 'claim warn';
+      m.textContent = 'Pooled separately: sensitivity ' + D.pct(psn, 0) + ', specificity ' + D.pct(psp, 0) + '. No cut-off gives this pair: at ' + D.pct(psp, 0) + ' specificity the curve gives about ' + D.pct(snAt, 0) + ' sensitivity. Separate pooling mixes cut-offs and understates accuracy.';
+    } else {
+      m.className = 'claim';
+      m.textContent = 'Lower cut-offs sit top right: more sensitive, less specific. The studies disagree mainly because they chose different cut-offs. This is the threshold effect. Tick the second box to see what separate pooling does.';
+    }
+  }
+  $('showCurve').addEventListener('change', upd2); $('showNaive').addEventListener('change', upd2); upd2();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Data extraction and summary measures for diagnostic accuracy studies</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../vendor/reveal.js/dist/reveal.css">
+<link rel="stylesheet" href="../assets/css/tokens.css">
+<link rel="stylesheet" href="../assets/css/slides.css">
+<style>
+  /* per-deck: 2x2 tables, figures, two-column layouts */
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  .two.wide-left { grid-template-columns: 1.25fr 1fr; }
+  .two > * { margin: 0; }
+  table.tt { font-size: 25px; margin: 0; }
+  table.tt th, table.tt td { padding: 10px 18px; text-align: center; }
+  table.tt th.rowh { text-align: left; }
+  table.tt td.cell { font-family: var(--font-head); font-size: 30px; }
+  table.tt td.cell span { display: block; font-family: var(--font-body); font-size: 19px; color: var(--dim); }
+  table.tt td.tp, table.tt td.tn { background: var(--good-wash); }
+  table.tt td.fp, table.tt td.fn { background: var(--bad-wash); }
+  table.tt td.tot { color: var(--dim); }
+  .reveal table.tt tr.colh th { text-align: center; }
+  .fig { display: block; height: auto; }
+  .fig .nd { fill: var(--band); opacity: .18; stroke: var(--band); stroke-width: 2; }
+  .fig .dz { fill: var(--bad); opacity: .22; stroke: var(--bad); stroke-width: 2; }
+  .fig .axis { stroke: var(--ink); stroke-width: 2; }
+  .fig .grid { stroke: var(--rule); stroke-width: 1; }
+  .fig .chance { stroke: var(--faint); stroke-width: 1.5; stroke-dasharray: 6 6; }
+  .fig .tick { font: 20px var(--font-body); fill: var(--dim); }
+  .fig .lbl { font: 600 22px var(--font-body); fill: var(--band); }
+  .fig .dzl { fill: var(--bad); }
+  .fig .cut { stroke: var(--ink); stroke-width: 2; stroke-dasharray: 5 5; }
+  .fig .cutl { font: 600 20px var(--font-body); fill: var(--ink); }
+  .fig .curve { fill: none; stroke: var(--faint); stroke-width: 3; }
+  .fig .pt { stroke: var(--paper); stroke-width: 2; }
+  .fig .t20 { fill: #5b7bd5; } .fig .t40 { fill: var(--band); } .fig .t80 { fill: var(--warn); }
+  .fig .pl { font: 600 20px var(--font-body); fill: var(--ink); }
+  .fig .naive { stroke: var(--bad); stroke-width: 4; fill: none; }
+  .fig .naivel { fill: var(--bad); }
+  .key { display: inline-block; width: 16px; height: 16px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+  .key.t20 { background: #5b7bd5; } .key.t40 { background: var(--band); } .key.t80 { background: var(--warn); }
+  .reveal td.hl { font-weight: 700; color: var(--band); }
+  .formula { font-family: var(--font-head); font-size: 26px; background: var(--wash); padding: 12px 18px; border-left: 4px solid var(--band); margin-bottom: 12px; }
+  .formula .dim { font-family: var(--font-body); font-size: var(--fs-small); }
+  .url { font-family: var(--font-head); font-size: 34px; color: var(--band); }
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- 1 -->
+<section class="cover">
+  <p class="kicker">MetaMastery 3.0 · Systematic review and meta-analysis workshop</p>
+  <h1>A febrile infant has a CRP of 45 mg/L. How much should that change your mind?</h1>
+  <p class="lede dim">Data extraction and summary measures for diagnostic accuracy studies</p>
+  <p class="small faint">AIIMS Bhopal · 30 minutes</p>
+  <aside class="notes">Good afternoon. This morning, with Dr Deepika, you assessed diagnostic accuracy studies with QUADAS-3 and pulled out 2 by 2 tables. In half an hour, Dr Suresh will pool those tables. My job in between is to make sure we all read the four cells the same way, know which numbers to pool and which never to pool, and know how to rebuild a 2 by 2 table when a paper hides it. The question on the screen is the one we will answer by the end: a CRP of 45 in a febrile infant, how much should it move you? Keep it in mind.</aside>
+</section>
+
+<!-- 2 -->
+<section>
+  <h2>In a diagnostic accuracy review, your unit of data is a 2×2 table</h2>
+  <div class="cards c3">
+    <div class="card"><h3>This morning</h3><p class="small">QUADAS-3: which accuracy estimates in each study can you trust? Pulling out the 2×2 table.</p></div>
+    <div class="card good"><h3>Now</h3><p class="small">What each cell means, which summary measures to report, and how to rebuild a 2×2 table a paper does not print.</p></div>
+    <div class="card"><h3>At 4 pm</h3><p class="small">Pooling the 2×2 tables: forest plots of sensitivity and specificity, the bivariate model and the SROC curve.</p></div>
+  </div>
+  <p class="claim">An intervention review pools one effect size per study. A diagnostic accuracy review pools two numbers per study, and they are linked.</p>
+  <aside class="notes">Here is where we are in the day. In an intervention review, each study gives you one effect size, a risk ratio or a mean difference, and you pool it. In a diagnostic accuracy review, each study gives you four counts: true positives, false positives, false negatives, true negatives. From those you get two numbers, sensitivity and specificity, and the two are tied together. That link is the reason DTA meta-analysis needs its own methods, which Dr Suresh will show you. Everything Dr Suresh does starts from the four counts you extract. If those are wrong, nothing downstream can fix it.</aside>
+</section>
+
+<!-- 3 -->
+<section>
+  <h2>Our running review: CRP for serious bacterial infection in febrile infants</h2>
+  <div class="two wide-left">
+    <div>
+      <table>
+        <tr><th>Part of the question</th><th>In this review</th></tr>
+        <tr><td>Participants</td><td>Febrile infants aged 90 days or less</td></tr>
+        <tr><td>Index test</td><td>Serum C-reactive protein (CRP)</td></tr>
+        <tr><td>Target condition</td><td>Serious bacterial infection (SBI)</td></tr>
+        <tr><td>Reference standard</td><td>Blood, urine or CSF culture</td></tr>
+      </table>
+    </div>
+    <div>
+      <table>
+        <tr><th>Study</th><th class="num">Infants</th><th class="num">CRP cut-off</th></tr>
+        <tr><td>A</td><td class="num">640</td><td class="num">20 mg/L</td></tr>
+        <tr><td>B</td><td class="num">1100</td><td class="num">20 mg/L</td></tr>
+        <tr><td>C</td><td class="num">420</td><td class="num">40 mg/L</td></tr>
+        <tr><td>D</td><td class="num">760</td><td class="num">40 mg/L</td></tr>
+        <tr><td>E</td><td class="num">380</td><td class="num">80 mg/L</td></tr>
+      </table>
+    </div>
+  </div>
+  <p class="claim warn">Five studies, three different cut-offs. Remember this: it will matter on slide 10.</p>
+  <p class="cite">The five studies and all their numbers are illustrative, constructed for teaching.</p>
+  <aside class="notes">One review runs through this session, the slides, the labs and the handout. The question: in febrile infants up to 90 days old, how accurate is CRP for serious bacterial infection, against culture as the reference standard. We have five studies. They are invented for teaching, but the pattern is realistic. Notice the cut-offs: two studies use 20, two use 40, one uses 80. Ask the room: does that worry you? Hold that thought, we come back to it. The same five 2 by 2 tables are in a CSV file on the session website. You can use it in Dr Suresh's hands-on.</aside>
+</section>
+
+<!-- 4 -->
+<section>
+  <h2>Four cells: the test result goes in the rows, the truth in the columns</h2>
+  <div class="two">
+    <table class="tt">
+      <tr class="colh"><th></th><th>SBI</th><th>No SBI</th><th>Total</th></tr>
+      <tr><th class="rowh">CRP ≥ 20</th><td class="cell tp">62<span>true positive</span></td><td class="cell fp">83<span>false positive</span></td><td class="cell tot">145</td></tr>
+      <tr><th class="rowh">CRP &lt; 20</th><td class="cell fn">15<span>false negative</span></td><td class="cell tn">480<span>true negative</span></td><td class="cell tot">495</td></tr>
+      <tr><th class="rowh">Total</th><td class="cell tot">77</td><td class="cell tot">563</td><td class="cell tot">640</td></tr>
+    </table>
+    <div>
+      <h3>Study A, cut-off 20 mg/L</h3>
+      <p class="small">Columns come from the reference standard. Rows come from the index test.</p>
+      <p class="small">RevMan and most software take the cells in one order: <strong>TP, FP, FN, TN</strong>.</p>
+      <p class="small">Many papers print the table the other way round. Check the labels before you copy.</p>
+    </div>
+  </div>
+  <p class="claim">Every summary measure in this session is arithmetic on these four numbers.</p>
+  <aside class="notes">Here is Study A at its cut-off of 20. Columns are the truth according to the reference standard: 77 infants with SBI, 563 without. Rows are the test result. The two green cells are correct results, the two red cells are errors. A practical warning. RevMan, and the R packages Dr Suresh may show, want the cells in the order TP, FP, FN, TN. Papers often transpose the table, with the test in the columns. Swapping FP and FN is the most common extraction error in DTA reviews, and it is invisible in a forest plot unless you look carefully. So always check the labels, and check that the column totals equal the number with and without the target condition.</aside>
+</section>
+
+<!-- 5 -->
+<section>
+  <h2>Sensitivity and specificity read down the columns</h2>
+  <div class="two">
+    <div>
+      <p class="formula">Sensitivity = TP / (TP + FN)<br><span class="dim">Of the infants with SBI, how many tested positive?</span></p>
+      <p class="formula">Specificity = TN / (TN + FP)<br><span class="dim">Of the infants without SBI, how many tested negative?</span></p>
+    </div>
+    <div>
+      <table>
+        <tr><th>Study A</th><th class="num">Value</th><th class="num">95% CI</th></tr>
+        <tr><td>Sensitivity</td><td class="num hl">62/77 = 80.5%</td><td class="num">70.3 to 87.8</td></tr>
+        <tr><td>Specificity</td><td class="num hl">480/563 = 85.3%</td><td class="num">82.1 to 87.9</td></tr>
+      </table>
+      <p class="small dim">Wilson score intervals. The narrower interval for specificity comes from the larger denominator.</p>
+    </div>
+  </div>
+  <p class="claim warn">Sensitivity and specificity are not fixed properties of a test. They change with the mix of patients, for example sicker or younger infants.</p>
+  <aside class="notes">Sensitivity reads down the SBI column: of 77 infants who truly had SBI, CRP caught 62, so 80.5 percent. Specificity reads down the no-SBI column: of 563 without SBI, 480 tested negative, 85.3 percent. Point out the confidence intervals. Sensitivity rests on only 77 infants, so its interval is wide, from 70 to 88. This is typical: in most DTA studies few people have the disease, so sensitivity is less precise. One misconception to correct: textbooks say sensitivity and specificity do not depend on prevalence. Strictly, they do not depend on prevalence as such, but they do vary with spectrum. A study in sicker infants, or in neonates, can give a higher sensitivity because the infections are more advanced. That is one reason studies disagree, and one reason you extract the setting and the population.</aside>
+</section>
+
+<!-- 6 -->
+<section>
+  <h2>Predictive values read across the rows, and they move with prevalence</h2>
+  <div class="two">
+    <div>
+      <p class="formula">PPV = TP / (TP + FP) = 62/145 = 42.8%</p>
+      <p class="formula">NPV = TN / (TN + FN) = 480/495 = 97.0%</p>
+      <p class="small">These answer the clinician's question: given this result, how likely is SBI?</p>
+    </div>
+    <div>
+      <table>
+        <tr><th>Prevalence of SBI</th><th class="num">PPV</th><th class="num">NPV</th></tr>
+        <tr><td>2%, a well baby clinic</td><td class="num">10.0%</td><td class="num">99.5%</td></tr>
+        <tr><td>5%</td><td class="num">22.3%</td><td class="num">98.8%</td></tr>
+        <tr><td class="hl">12%, Study A</td><td class="num hl">42.8%</td><td class="num hl">97.0%</td></tr>
+        <tr><td>30%, a sick neonatal unit</td><td class="num">70.1%</td><td class="num">91.1%</td></tr>
+      </table>
+      <p class="small dim">Same sensitivity (80.5%) and specificity (85.3%) in every row.</p>
+    </div>
+  </div>
+  <p class="claim warn">Do not pool PPV and NPV across studies. Pool sensitivity and specificity, then calculate predictive values for a stated prevalence.</p>
+  <aside class="notes">Predictive values read across the rows. Of 145 infants with a positive CRP, 62 had SBI, a PPV of 43 percent. Of 495 with a negative CRP, 480 were free of SBI, an NPV of 97 percent. These are what a clinician wants. But look at the table on the right. Same test, same sensitivity and specificity, only the prevalence changes. At 2 percent prevalence, a positive CRP means SBI only one time in ten. In a sick neonatal unit at 30 percent, seven in ten. Our five studies have prevalences from 9 to 18 percent, so their PPVs differ for reasons that have nothing to do with the test. That is why we do not pool predictive values. The rule: pool sensitivity and specificity, then report predictive values at a prevalence that fits your setting. GRADE's summary of findings tables for tests do exactly this, per 1000 patients tested.</aside>
+</section>
+
+<!-- 7 -->
+<section>
+  <h2>Likelihood ratios turn a test result into a change of mind</h2>
+  <div class="two">
+    <div>
+      <p class="formula">LR+ = sensitivity / (1 − specificity) = 0.805 / 0.147 = 5.5</p>
+      <p class="formula">LR− = (1 − sensitivity) / specificity = 0.195 / 0.853 = 0.23</p>
+      <p class="formula">Post-test odds = pre-test odds × LR</p>
+    </div>
+    <div>
+      <table>
+        <tr><th>Study A, pre-test 12%</th><th class="num">Post-test</th></tr>
+        <tr><td>CRP ≥ 20 (LR+ 5.5)</td><td class="num hl">43%</td></tr>
+        <tr><td>CRP &lt; 20 (LR− 0.23)</td><td class="num hl">3%</td></tr>
+      </table>
+      <p class="small">Rough guide: LR+ above 10 or LR− below 0.1 change your mind a lot. Between 0.5 and 2, hardly at all.</p>
+    </div>
+  </div>
+  <p class="claim">A negative CRP at 20 mg/L leaves a 3% risk of SBI. Would you send that infant home?</p>
+  <aside class="notes">Likelihood ratios combine sensitivity and specificity into one number per test result. A positive CRP is 5.5 times more likely in an infant with SBI than in one without. A negative CRP is about a quarter as likely. To use them, convert the pre-test probability to odds, multiply, and convert back. Study A's prevalence of 12 percent is odds of 0.137. Times 5.5 gives 0.75, which is 43 percent: that is the PPV again, as it should be. Times 0.23 gives 3 percent. Now ask the room: would you send home a febrile infant with a 3 percent risk of SBI? Most paediatricians would not. So CRP at 20 is not a rule-out test on its own. The rough thresholds of 10 and 0.1 come from the JAMA users' guides; treat them as a guide, not a rule. For the meta-analysis: pool sensitivity and specificity with the bivariate model, then derive the LRs from the pooled values. Do not pool LRs directly.</aside>
+</section>
+
+<!-- 8 -->
+<section>
+  <h2>The diagnostic odds ratio: one number, and what it hides</h2>
+  <div class="two">
+    <div>
+      <p class="formula">DOR = (TP × TN) / (FP × FN) = LR+ / LR−</p>
+      <p class="small">Study A: (62 × 480) / (83 × 15) = <strong>23.9</strong>, 95% CI 13.0 to 44.0</p>
+      <p class="small">Useful inside the models: the HSROC model and comparisons between tests work on this scale.</p>
+    </div>
+    <div>
+      <table>
+        <tr><th>Two tests</th><th class="num">Sens.</th><th class="num">Spec.</th><th class="num">DOR</th></tr>
+        <tr><td>Test X</td><td class="num">95%</td><td class="num">56%</td><td class="num">24</td></tr>
+        <tr><td>Test Y</td><td class="num">56%</td><td class="num">95%</td><td class="num">24</td></tr>
+      </table>
+      <p class="small">Same DOR. X rules out, Y rules in. A clinician needs to know which.</p>
+    </div>
+  </div>
+  <p class="claim warn">Do not report the DOR alone. Always give sensitivity and specificity with it.</p>
+  <aside class="notes">The diagnostic odds ratio is the odds of a positive test in people with the disease, divided by the odds of a positive test in people without it. For Study A it is about 24. It has nice statistical properties, it is fairly stable across thresholds, and the HSROC model Dr Suresh may mention is built on it. But look at the two made-up tests on the right. Both have a DOR of 24. Test X catches nearly everyone with disease but has many false positives: a rule-out test. Test Y is the reverse: a rule-in test. A single DOR cannot tell them apart. So the DOR belongs inside the analysis, not as the headline of your abstract. Also a practical note: if any cell is zero, the DOR and the LRs are undefined; software adds 0.5 to every cell. Record zero cells as zero in your extraction form. Let the software apply the correction.</aside>
+</section>
+
+<!-- 9 -->
+<section>
+  <h2>CRP is continuous: every cut-off gives a different 2×2 table</h2>
+  <div class="two wide-left">
+    <!--FIG:density-->
+<svg class="fig" viewBox="0 0 700 400" width="700" role="img" aria-label="CRP distributions in infants with and without serious bacterial infection, with cut-offs at 20, 40 and 80 mg/L">
+<path class="nd" d="M30.0,330.0 L30.0,321.5 32.7,320.7 35.4,319.9 38.1,319.1 40.8,318.2 43.5,317.2 46.2,316.2 49.0,315.0 51.7,313.9 54.4,312.6 57.1,311.3 59.8,309.8 62.5,308.3 65.2,306.8 67.9,305.1 70.6,303.3 73.3,301.4 76.0,299.4 78.8,297.3 81.5,295.1 84.2,292.8 86.9,290.4 89.6,287.9 92.3,285.2 95.0,282.5 97.7,279.6 100.4,276.6 103.1,273.4 105.8,270.2 108.5,266.8 111.2,263.3 114.0,259.6 116.7,255.9 119.4,252.0 122.1,248.0 124.8,243.9 127.5,239.7 130.2,235.3 132.9,230.9 135.6,226.3 138.3,221.7 141.0,216.9 143.8,212.1 146.5,207.1 149.2,202.1 151.9,197.0 154.6,191.9 157.3,186.7 160.0,181.5 162.7,176.2 165.4,170.9 168.1,165.5 170.8,160.2 173.5,154.9 176.2,149.6 179.0,144.3 181.7,139.0 184.4,133.8 187.1,128.6 189.8,123.6 192.5,118.6 195.2,113.7 197.9,108.9 200.6,104.2 203.3,99.7 206.0,95.3 208.7,91.1 211.5,87.0 214.2,83.1 216.9,79.4 219.6,75.9 222.3,72.6 225.0,69.5 227.7,66.7 230.4,64.1 233.1,61.7 235.8,59.6 238.5,57.7 241.2,56.1 244.0,54.8 246.7,53.8 249.4,53.0 252.1,52.5 254.8,52.2 257.5,52.3 260.2,52.6 262.9,53.2 265.6,54.1 268.3,55.2 271.0,56.7 273.8,58.4 276.5,60.3 279.2,62.5 281.9,65.0 284.6,67.6 287.3,70.6 290.0,73.7 292.7,77.1 295.4,80.6 298.1,84.4 300.8,88.4 303.5,92.5 306.3,96.8 309.0,101.2 311.7,105.8 314.4,110.5 317.1,115.3 319.8,120.3 322.5,125.3 325.2,130.4 327.9,135.6 330.6,140.8 333.3,146.1 336.0,151.4 338.8,156.7 341.5,162.0 344.2,167.4 346.9,172.7 349.6,178.0 352.3,183.3 355.0,188.5 357.7,193.7 360.4,198.8 363.1,203.8 365.8,208.8 368.5,213.7 371.2,218.5 374.0,223.3 376.7,227.9 379.4,232.4 382.1,236.8 384.8,241.1 387.5,245.3 390.2,249.4 392.9,253.4 395.6,257.2 398.3,260.9 401.0,264.5 403.8,268.0 406.5,271.3 409.2,274.5 411.9,277.6 414.6,280.6 417.3,283.4 420.0,286.2 422.7,288.8 425.4,291.3 428.1,293.6 430.8,295.9 433.5,298.1 436.2,300.1 439.0,302.1 441.7,303.9 444.4,305.7 447.1,307.3 449.8,308.9 452.5,310.3 455.2,311.7 457.9,313.0 460.6,314.3 463.3,315.4 466.0,316.5 468.7,317.5 471.5,318.5 474.2,319.4 476.9,320.2 479.6,321.0 482.3,321.7 485.0,322.4 487.7,323.0 490.4,323.6 493.1,324.1 495.8,324.6 498.5,325.1 501.2,325.5 504.0,325.9 506.7,326.3 509.4,326.6 512.1,326.9 514.8,327.2 517.5,327.4 520.2,327.7 522.9,327.9 525.6,328.1 528.3,328.3 531.0,328.4 533.8,328.6 536.5,328.7 539.2,328.9 541.9,329.0 544.6,329.1 547.3,329.2 550.0,329.3 552.7,329.3 555.4,329.4 558.1,329.5 560.8,329.5 563.5,329.6 566.2,329.6 569.0,329.7 571.7,329.7 574.4,329.7 577.1,329.8 579.8,329.8 582.5,329.8 585.2,329.8 587.9,329.9 590.6,329.9 593.3,329.9 596.0,329.9 598.8,329.9 601.5,329.9 604.2,329.9 606.9,329.9 609.6,329.9 612.3,330.0 615.0,330.0 617.7,330.0 620.4,330.0 623.1,330.0 625.8,330.0 628.5,330.0 631.2,330.0 634.0,330.0 636.7,330.0 639.4,330.0 642.1,330.0 644.8,330.0 647.5,330.0 650.2,330.0 652.9,330.0 655.6,330.0 658.3,330.0 661.0,330.0 663.8,330.0 666.5,330.0 669.2,330.0 671.9,330.0 674.6,330.0 677.3,330.0 680.0,330.0 L680.0,330.0 Z"/>
+<path class="dz" d="M30.0,330.0 L30.0,329.9 32.7,329.9 35.4,329.9 38.1,329.9 40.8,329.9 43.5,329.9 46.2,329.9 49.0,329.9 51.7,329.9 54.4,329.8 57.1,329.8 59.8,329.8 62.5,329.8 65.2,329.7 67.9,329.7 70.6,329.7 73.3,329.7 76.0,329.6 78.8,329.6 81.5,329.5 84.2,329.5 86.9,329.4 89.6,329.4 92.3,329.3 95.0,329.2 97.7,329.1 100.4,329.1 103.1,329.0 105.8,328.9 108.5,328.7 111.2,328.6 114.0,328.5 116.7,328.3 119.4,328.2 122.1,328.0 124.8,327.8 127.5,327.6 130.2,327.4 132.9,327.2 135.6,326.9 138.3,326.6 141.0,326.3 143.8,326.0 146.5,325.7 149.2,325.3 151.9,324.9 154.6,324.5 157.3,324.0 160.0,323.6 162.7,323.0 165.4,322.5 168.1,321.9 170.8,321.3 173.5,320.6 176.2,319.9 179.0,319.1 181.7,318.3 184.4,317.4 187.1,316.5 189.8,315.6 192.5,314.5 195.2,313.4 197.9,312.3 200.6,311.1 203.3,309.8 206.0,308.5 208.7,307.1 211.5,305.6 214.2,304.0 216.9,302.4 219.6,300.7 222.3,298.9 225.0,297.0 227.7,295.1 230.4,293.0 233.1,290.9 235.8,288.7 238.5,286.4 241.2,284.0 244.0,281.5 246.7,278.9 249.4,276.2 252.1,273.4 254.8,270.6 257.5,267.6 260.2,264.6 262.9,261.4 265.6,258.2 268.3,254.9 271.0,251.5 273.8,248.0 276.5,244.4 279.2,240.7 281.9,237.0 284.6,233.1 287.3,229.2 290.0,225.3 292.7,221.2 295.4,217.1 298.1,213.0 300.8,208.8 303.5,204.5 306.3,200.2 309.0,195.9 311.7,191.6 314.4,187.2 317.1,182.8 319.8,178.4 322.5,174.0 325.2,169.6 327.9,165.2 330.6,160.8 333.3,156.5 336.0,152.1 338.8,147.9 341.5,143.7 344.2,139.5 346.9,135.4 349.6,131.4 352.3,127.5 355.0,123.7 357.7,120.0 360.4,116.3 363.1,112.9 365.8,109.5 368.5,106.2 371.2,103.1 374.0,100.2 376.7,97.4 379.4,94.8 382.1,92.3 384.8,90.0 387.5,87.9 390.2,86.0 392.9,84.2 395.6,82.7 398.3,81.3 401.0,80.2 403.8,79.2 406.5,78.5 409.2,77.9 411.9,77.6 414.6,77.5 417.3,77.6 420.0,77.9 422.7,78.4 425.4,79.1 428.1,80.0 430.8,81.1 433.5,82.4 436.2,84.0 439.0,85.7 441.7,87.6 444.4,89.6 447.1,91.9 449.8,94.3 452.5,97.0 455.2,99.7 457.9,102.6 460.6,105.7 463.3,108.9 466.0,112.3 468.7,115.8 471.5,119.4 474.2,123.1 476.9,126.9 479.6,130.8 482.3,134.8 485.0,138.8 487.7,143.0 490.4,147.2 493.1,151.4 495.8,155.7 498.5,160.1 501.2,164.4 504.0,168.8 506.7,173.2 509.4,177.7 512.1,182.1 514.8,186.5 517.5,190.8 520.2,195.2 522.9,199.5 525.6,203.8 528.3,208.1 531.0,212.3 533.8,216.5 536.5,220.6 539.2,224.6 541.9,228.6 544.6,232.5 547.3,236.3 550.0,240.1 552.7,243.8 555.4,247.4 558.1,250.9 560.8,254.3 563.5,257.7 566.2,260.9 569.0,264.1 571.7,267.1 574.4,270.1 577.1,273.0 579.8,275.8 582.5,278.5 585.2,281.1 587.9,283.6 590.6,286.0 593.3,288.3 596.0,290.5 598.8,292.7 601.5,294.7 604.2,296.7 606.9,298.6 609.6,300.4 612.3,302.1 615.0,303.8 617.7,305.3 620.4,306.8 623.1,308.3 625.8,309.6 628.5,310.9 631.2,312.1 634.0,313.3 636.7,314.4 639.4,315.4 642.1,316.4 644.8,317.3 647.5,318.2 650.2,319.0 652.9,319.7 655.6,320.5 658.3,321.1 661.0,321.8 663.8,322.4 666.5,322.9 669.2,323.5 671.9,324.0 674.6,324.4 677.3,324.9 680.0,325.3 L680.0,330.0 Z"/>
+<line class="axis" x1="30" x2="680" y1="330.0" y2="330.0"/>
+<text class="tick" x="89.3" y="356.0" text-anchor="middle">1</text>
+<text class="tick" x="226.9" y="356.0" text-anchor="middle">5</text>
+<text class="tick" x="286.2" y="356.0" text-anchor="middle">10</text>
+<text class="tick" x="345.5" y="356.0" text-anchor="middle">20</text>
+<text class="tick" x="404.7" y="356.0" text-anchor="middle">40</text>
+<text class="tick" x="464.0" y="356.0" text-anchor="middle">80</text>
+<text class="tick" x="542.4" y="356.0" text-anchor="middle">200</text>
+<text class="tick" x="620.7" y="356.0" text-anchor="middle">500</text>
+<text class="tick" x="350.0" y="388" text-anchor="middle">CRP, mg/L (log scale)</text>
+<line class="cut" x1="345.5" x2="345.5" y1="40" y2="330.0"/>
+<text class="cutl" x="345.5" y="30" text-anchor="middle">20</text>
+<line class="cut" x1="404.7" x2="404.7" y1="40" y2="330.0"/>
+<text class="cutl" x="404.7" y="30" text-anchor="middle">40</text>
+<line class="cut" x1="464.0" x2="464.0" y1="40" y2="330.0"/>
+<text class="cutl" x="464.0" y="30" text-anchor="middle">80</text>
+<text class="lbl" x="156.7" y="42.2" text-anchor="middle">No SBI</text>
+<text class="lbl dzl" x="542.4" y="215.3" text-anchor="middle">SBI</text>
+</svg>
+<!--/FIG:density-->
+    <div>
+      <table>
+        <tr><th>Cut-off</th><th class="num">Sens.</th><th class="num">Spec.</th></tr>
+        <tr><td>20 mg/L</td><td class="num">77%</td><td class="num">85%</td></tr>
+        <tr><td>40 mg/L</td><td class="num">54%</td><td class="num">96%</td></tr>
+        <tr><td>80 mg/L</td><td class="num">30%</td><td class="num">99%</td></tr>
+      </table>
+      <p class="small">Plot every cut-off and you get the ROC curve. Here the area under it is 0.89.</p>
+      <p class="small dim">Youden index = sensitivity + specificity − 1, highest here near 18 mg/L.</p>
+    </div>
+  </div>
+  <aside class="notes">CRP is a number, not a yes or no. The pink curve is CRP in infants with SBI, the blue curve in infants without. They overlap; every real test overlaps. Draw a cut-off and you split both curves: everything to the right is test-positive. Move the cut-off right, to 40 or 80: fewer false positives, so specificity rises, but you miss more infections, so sensitivity falls. Each cut-off gives its own 2 by 2 table, and plotting all of them gives the ROC curve. The area under the curve, 0.89 here, is the chance that a random infant with SBI has a higher CRP than a random infant without. The Youden index picks the cut-off that maximises sensitivity plus specificity, but that treats a missed infection and a false alarm as equally bad. In febrile infants they are not equally bad. Lab 3 lets you move this cut-off yourself.</aside>
+</section>
+
+<!-- 10 -->
+<section>
+  <h2>Across studies, a lower cut-off buys sensitivity with specificity</h2>
+  <div class="two">
+    <!--FIG:roc-->
+<svg class="fig" viewBox="0 0 470 470" width="470" role="img" aria-label="The five studies plotted in ROC space">
+<line class="grid" x1="80" x2="450" y1="305.0" y2="305.0"/>
+<line class="grid" x1="172.5" x2="172.5" y1="400" y2="20"/>
+<line class="grid" x1="80" x2="450" y1="210.0" y2="210.0"/>
+<line class="grid" x1="265.0" x2="265.0" y1="400" y2="20"/>
+<line class="grid" x1="80" x2="450" y1="115.0" y2="115.0"/>
+<line class="grid" x1="357.5" x2="357.5" y1="400" y2="20"/>
+<line class="grid" x1="80" x2="450" y1="20.0" y2="20.0"/>
+<line class="grid" x1="450.0" x2="450.0" y1="400" y2="20"/>
+<line class="axis" x1="80" x2="450" y1="400" y2="400"/>
+<line class="axis" x1="80" x2="80" y1="400" y2="20"/>
+<line class="chance" x1="80" x2="450" y1="400" y2="20"/>
+<text class="tick" x="80.0" y="426" text-anchor="middle">0</text>
+<text class="tick" x="70" y="407.0" text-anchor="end">0</text>
+<text class="tick" x="265.0" y="426" text-anchor="middle">0.5</text>
+<text class="tick" x="70" y="217.0" text-anchor="end">0.5</text>
+<text class="tick" x="450.0" y="426" text-anchor="middle">1</text>
+<text class="tick" x="70" y="27.0" text-anchor="end">1</text>
+<text class="tick" x="265.0" y="456" text-anchor="middle">1 − specificity</text>
+<text class="tick" x="22" y="210.0" text-anchor="middle" transform="rotate(-90 22 210.0)">Sensitivity</text>
+<polyline class="curve" points="450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 450.0,20.0 449.9,20.0 449.9,20.0 449.9,20.0 449.9,20.0 449.9,20.0 449.9,20.0 449.9,20.0 449.8,20.0 449.8,20.0 449.8,20.0 449.8,20.0 449.7,20.0 449.7,20.0 449.6,20.0 449.6,20.0 449.5,20.0 449.5,20.0 449.4,20.0 449.3,20.0 449.2,20.0 449.1,20.0 449.0,20.0 448.9,20.0 448.7,20.0 448.6,20.0 448.4,20.0 448.2,20.0 448.0,20.0 447.7,20.0 447.5,20.0 447.2,20.0 446.8,20.0 446.5,20.0 446.1,20.0 445.7,20.0 445.2,20.0 444.7,20.0 444.1,20.1 443.5,20.1 442.8,20.1 442.1,20.1 441.3,20.1 440.4,20.1 439.5,20.1 438.5,20.1 437.4,20.2 436.3,20.2 435.0,20.2 433.7,20.2 432.3,20.3 430.8,20.3 429.1,20.3 427.4,20.4 425.6,20.4 423.6,20.5 421.5,20.5 419.3,20.6 417.0,20.7 414.6,20.8 412.0,20.9 409.3,21.0 406.4,21.1 403.4,21.2 400.3,21.3 397.0,21.5 393.6,21.7 390.0,21.8 386.3,22.0 382.5,22.3 378.5,22.5 374.4,22.8 370.1,23.1 365.7,23.4 361.2,23.7 356.5,24.1 351.7,24.5 346.8,25.0 341.8,25.4 336.6,26.0 331.4,26.5 326.0,27.2 320.6,27.8 315.1,28.5 309.5,29.3 303.8,30.1 298.1,31.0 292.3,31.9 286.5,32.9 280.6,34.0 274.7,35.2 268.8,36.4 262.9,37.7 257.0,39.1 251.1,40.6 245.3,42.1 239.4,43.8 233.6,45.5 227.9,47.4 222.2,49.3 216.6,51.4 211.0,53.5 205.6,55.8 200.2,58.2 194.9,60.7 189.8,63.3 184.7,66.0 179.7,68.8 174.9,71.8 170.2,74.9 165.6,78.1 161.2,81.4 156.9,84.9 152.7,88.4 148.7,92.1 144.8,95.9 141.1,99.8 137.4,103.9 134.0,108.0 130.7,112.3 127.5,116.7 124.5,121.2 121.6,125.8 118.8,130.4 116.2,135.2 113.7,140.1 111.3,145.1 109.1,150.1 107.0,155.2 105.0,160.4 103.1,165.6 101.4,170.9 99.7,176.3 98.2,181.7 96.7,187.1 95.3,192.6 94.1,198.1 92.9,203.6 91.8,209.1 90.8,214.6 89.8,220.1 88.9,225.6 88.1,231.1 87.4,236.5 86.7,241.9 86.1,247.3 85.5,252.6 85.0,257.9 84.5,263.1 84.0,268.2 83.6,273.3 83.3,278.3 82.9,283.2 82.6,288.0 82.3,292.7 82.1,297.3 81.9,301.8 81.7,306.2 81.5,310.6 81.3,314.7 81.2,318.8 81.0,322.8 80.9,326.6 80.8,330.4 80.7,334.0 80.6,337.5 80.5,340.8 80.5,344.1 80.4,347.2 80.4,350.2 80.3,353.1 80.3,355.8 80.2,358.5 80.2,361.0 80.2,363.4 80.2,365.7 80.1,367.9 80.1,370.0 80.1,372.0 80.1,373.9 80.1,375.6 80.1,377.3 80.1,378.9 80.0,380.4 80.0,381.8 80.0,383.2 80.0,384.4 80.0,385.6 80.0,386.7 80.0,387.7 80.0,388.7 80.0,389.6 80.0,390.4 80.0,391.2 80.0,392.0 80.0,392.6 80.0,393.3 80.0,393.8 80.0,394.4 80.0,394.9 80.0,395.3 80.0,395.8 80.0,396.1 80.0,396.5 80.0,396.8 80.0,397.1 80.0,397.4 80.0,397.7 80.0,397.9 80.0,398.1 80.0,398.3 80.0,398.5 80.0,398.6 80.0,398.8 80.0,398.9 80.0,399.0 80.0,399.1 80.0,399.2 80.0,399.3 80.0,399.4 80.0,399.4 80.0,399.5 80.0,399.6 80.0,399.6 80.0,399.7 80.0,399.7 80.0,399.7 80.0,399.8 80.0,399.8 80.0,399.8 80.0,399.8 80.0,399.9 80.0,399.9 80.0,399.9 80.0,399.9 80.0,399.9 80.0,399.9 80.0,399.9 80.0,399.9 80.0,400.0 80.0,400.0 80.0,400.0 80.0,400.0"/>
+<circle class="pt t20" cx="134.5" cy="94.0" r="12.1"/>
+<text class="pl" x="151.6" y="101.0">A</text>
+<circle class="pt t20" cx="134.3" cy="131.3" r="14.0"/>
+<text class="pl" x="153.3" y="138.3">B</text>
+<circle class="pt t40" cx="95.1" cy="165.0" r="10.9"/>
+<text class="pl" x="95.1" y="148.1" text-anchor="middle">C</text>
+<circle class="pt t40" cx="94.8" cy="214.5" r="12.6"/>
+<text class="pl" x="112.4" y="221.5">D</text>
+<circle class="pt t80" cx="82.3" cy="273.3" r="10.7"/>
+<text class="pl" x="98.0" y="280.3">E</text>
+<path class="naive" d="M113.3,162.0 L133.3,182.0 M113.3,182.0 L133.3,162.0"/>
+<text class="pl naivel" x="139.3" y="198.0">pooled separately</text>
+</svg>
+<!--/FIG:roc-->
+    <div>
+      <p class="small"><span class="key t20"></span>20 mg/L &nbsp; <span class="key t40"></span>40 mg/L &nbsp; <span class="key t80"></span>80 mg/L &nbsp; circle size = study size</p>
+      <p class="small">The studies lie along one curve. This trade-off is the <strong>threshold effect</strong>, and it makes sensitivity and specificity negatively correlated across studies.</p>
+      <p class="small">Pool them separately and you get 60% and 88%, the red cross. That point lies below the curve the studies follow: at 88% specificity, CRP gives about 73% sensitivity.</p>
+    </div>
+  </div>
+  <p class="claim">Pool sensitivity and specificity together: bivariate model or HSROC. That is the 4 pm session.</p>
+  <aside class="notes">Now the five studies in ROC space: sensitivity up, one minus specificity across. The 20 mg/L studies sit top right, high sensitivity, more false positives. The 80 mg/L study sits bottom left. They follow the same grey curve. The disagreement between studies is mostly not heterogeneity in the test, it is a different choice of cut-off. That is the threshold effect, and it produces a negative correlation between sensitivity and specificity across studies. If you ignore it and pool sensitivity and specificity in two separate meta-analyses, you get the red cross: 60 percent and 88 percent. That pair describes no real cut-off; at 88 percent specificity the curve gives about 73 percent. Separate pooling underestimates accuracy and mixes cut-offs. This is why the Cochrane Handbook recommends the bivariate model, or HSROC when cut-offs vary, which Dr Suresh will run. For your extraction form, the lesson is simple: always record the cut-off for every 2 by 2 table.</aside>
+</section>
+
+<!-- 11 -->
+<section>
+  <h2>When the paper does not print the 2×2 table, rebuild it</h2>
+  <div class="two">
+    <div>
+      <p class="small">You need the number with and without the target condition (D and ND), plus two accuracy figures.</p>
+      <p class="formula">TP = sensitivity × D &nbsp;·&nbsp; FN = D − TP<br>TN = specificity × ND &nbsp;·&nbsp; FP = ND − TN</p>
+      <p class="formula">If given PPV instead of specificity:<br>FP = TP / PPV − TP</p>
+    </div>
+    <div>
+      <h3>Study B reports</h3>
+      <p class="small">1100 infants, 99 with SBI. At 20 mg/L, sensitivity 70.7%, specificity 85.3%.</p>
+      <p class="small">TP = 0.707 × 99 = 69.99, so <strong>70</strong>. FN = 29.<br>TN = 0.853 × 1001 = 853.9, so <strong>854</strong>. FP = 147.</p>
+      <p class="small">Check: 70/99 = 70.7% and 854/1001 = 85.3%. Both match.</p>
+    </div>
+  </div>
+  <p class="claim good">Round to whole people, then recalculate. If the percentages do not come back, your table is wrong.</p>
+  <aside class="notes">Many papers report sensitivity and specificity but not the table. You can rebuild it if you know how many participants had the target condition and how many did not. Multiply sensitivity by the number with disease to get true positives, the rest are false negatives. Same for specificity. Study B: 0.707 times 99 is 69.99, so 70 true positives. Specificity 0.853 times 1001 is 853.9, so 854 true negatives. Now the step people skip: recalculate. 70 over 99 is 70.7 percent; 854 over 1001 is 85.3 percent. If your rebuilt table does not reproduce the published figures, something is wrong: a different denominator, excluded patients, or a typo in the paper. Record in your extraction form that the table was back-calculated. Sometimes it cannot be rebuilt, for example when only sensitivity and AUC are given. Then contact the authors, and say in the review what you could not use.</aside>
+</section>
+
+<!-- 12 -->
+<section>
+  <h2>Five decisions to write into your protocol before you extract</h2>
+  <div class="grid6">
+    <div class="card"><h3>Inconclusive results</h3><p class="small">Haemolysed samples, failed tests. Extract how many, and with which reference result.</p></div>
+    <div class="card"><h3>Unverified participants</h3><p class="small">No reference standard done. Record the number. Never count them as negative.</p></div>
+    <div class="card"><h3>Several cut-offs</h3><p class="small">Extract a 2×2 table for every cut-off. Decide in advance which one enters the main analysis.</p></div>
+    <div class="card"><h3>Unit of analysis</h3><p class="small">Infants, episodes, samples or lesions? Only one per participant enters the 2×2 table.</p></div>
+    <div class="card"><h3>Several readers or tests</h3><p class="small">Choose one reader, or the consensus, by a rule set in advance.</p></div>
+    <div class="card"><h3>Overlapping cohorts</h3><p class="small">Same infants in two papers? Link the reports and count them once.</p></div>
+  </div>
+  <p class="claim">QUADAS-3 judges risk of bias for each accuracy estimate, and its new Analysis domain asks about exactly these choices.</p>
+  <aside class="notes">These are the judgement calls that make two extractors disagree, so settle them in the protocol. Inconclusive results: haemolysed samples, test failures. Studies usually drop them, which flatters the test; extract how many there were and, if reported, their reference results. Unverified participants: those who never got the reference standard; extract the number, never assume they were negative. Several cut-offs: extract a table for each one, and decide in advance which goes in the main analysis, for example the study's prespecified cut-off. Unit of analysis: a study that counts episodes or lesions, not infants, double counts; take one per participant. Several readers: decide whose reading you take. Overlapping cohorts: the same infants in two papers must be counted once. QUADAS-3, published this year in the Annals, now assesses each accuracy estimate rather than the whole study, and its Analysis domain, which replaces Flow and Timing, asks about exactly these choices. Your extraction form must capture enough to answer it.</aside>
+</section>
+
+<!-- 13 -->
+<section>
+  <h2>What goes on a diagnostic accuracy extraction form</h2>
+  <div class="cards c3">
+    <div class="card"><h3>Study</h3><p class="small">Design (cross-sectional or two-gate), recruitment, country, dates, funding.</p></div>
+    <div class="card"><h3>Participants</h3><p class="small">Setting, age, severity, prior tests, inclusion and exclusion criteria, prevalence.</p></div>
+    <div class="card"><h3>Index test</h3><p class="small">Method, platform, cut-off, prespecified or chosen from the data, blinding.</p></div>
+    <div class="card"><h3>Reference standard</h3><p class="small">Definition, who got it, blinding to the index test, time between tests.</p></div>
+    <div class="card"><h3>Flow</h3><p class="small">Numbers enrolled, verified, inconclusive, excluded and analysed. Draw it.</p></div>
+    <div class="card good"><h3>Results</h3><p class="small">TP, FP, FN, TN for each cut-off and subgroup, and how you got them.</p></div>
+  </div>
+  <p class="small dim" style="margin-top:16px">A ready-to-use form is in your handout and on the session website.</p>
+  <aside class="notes">Here is the skeleton of the form. Most of it feeds two places: the characteristics of included studies table, and QUADAS-3. Two items deserve stress. First, design: a two-gate or diagnostic case-control design, cases from one place and healthy controls from another, inflates accuracy, sometimes a lot. Record it so you can do a sensitivity analysis. Second, whether the cut-off was prespecified or picked after looking at the data; data-driven cut-offs are optimistic. In the results box, record not just the four numbers but how you got them: copied from a table, back-calculated, or obtained from the authors. Pilot the form on two or three studies with two extractors before you start. The handout has the full form with these fields.</aside>
+</section>
+
+<!-- 14 -->
+<section>
+  <h2>Your turn: rebuild three 2×2 tables</h2>
+  <p class="lede">Open the session website on your phone or laptop and choose <strong>Lab 2</strong>.</p>
+  <p class="url">drpakhare.github.io/dta-summary-measures</p>
+  <div class="cards c3" style="margin-top:20px">
+    <div class="card"><h3>Study C</h3><p class="small">Sensitivity and PPV only.</p></div>
+    <div class="card"><h3>Study D</h3><p class="small">Inconclusive and unverified infants.</p></div>
+    <div class="card"><h3>Study E</h3><p class="small">Three cut-offs in one paper.</p></div>
+  </div>
+  <p class="small dim" style="margin-top:16px">In pairs, four minutes. Labs 1 and 3 are for later and for the 4 pm session.</p>
+  <aside class="notes">Pairs, four minutes. Lab 2 gives each study as it might appear in a results section. They type in TP, FP, FN, TN and press Check. Study C needs the PPV formula. Study D tests whether they leave out inconclusive and unverified infants and record them. Study E tests the cut-off decision. If time is short, do Study C together on the screen and leave D and E for the tea break. Answers: C is 47, 14, 29, 330. D is 41, 27, 43, 649. E at the prespecified 80 mg/L is 19, 2, 38, 321. Lab 1 is a 2 by 2 calculator with a prevalence slider; Lab 3 is the cut-off and ROC explorer. Both are useful in Dr Suresh's session.</aside>
+</section>
+
+<!-- 15 -->
+<section>
+  <h2>So: a CRP of 45 mg/L in a febrile infant?</h2>
+  <p class="claim">The 2×2 table is the data. Check its orientation, rebuild it when needed, and always record the cut-off.</p>
+  <p class="claim">Pool sensitivity and specificity together. Calculate predictive values and likelihood ratios from the pooled values, at a stated prevalence.</p>
+  <p class="claim good">At 40 mg/L, LR+ is about 13. A 10% pre-test risk becomes about 60%: well past most thresholds for treating as SBI.</p>
+  <aside class="notes">Back to the question we started with. A CRP of 45 is above the 40 cut-off. Studies C and D at 40 give an LR+ of about 12 to 15; take 13. For an infant with a 10 percent pre-test risk, odds 0.11 times 13 is about 1.4, so roughly 60 percent. That moves you a long way, past most thresholds for treating as SBI. But remember the other side: a CRP under 20 still left about 3 percent. Three things to carry out. The 2 by 2 table is your data: check which way round it is, rebuild it when the paper hides it, and always record the cut-off. Pool sensitivity and specificity together, not apart. And give clinicians predictive values and likelihood ratios worked out from pooled values at a realistic prevalence. Dr Suresh will now show you how to pool. Questions?</aside>
+</section>
+
+<!-- 16 -->
+<section>
+  <h2>Sources and further reading</h2>
+  <ol class="sources two">
+    <li>Deeks JJ, Bossuyt PM, Leeflang MM, Takwoingi Y, eds. Cochrane Handbook for Systematic Reviews of Diagnostic Test Accuracy. Version 2.0. Cochrane; 2023.</li>
+    <li>Whiting PF, Tomlinson E, Rutjes AWS, et al. QUADAS-3: a revised tool for the quality assessment of diagnostic test accuracy studies. Ann Intern Med. 2026. doi:10.7326/ANNALS-25-02104</li>
+    <li>Reitsma JB, Glas AS, Rutjes AWS, et al. Bivariate analysis of sensitivity and specificity produces informative summary measures in diagnostic reviews. J Clin Epidemiol. 2005;58:982-90.</li>
+    <li>Rutter CM, Gatsonis CA. A hierarchical regression approach to meta-analysis of diagnostic test accuracy evaluations. Stat Med. 2001;20:2865-84.</li>
+    <li>Glas AS, Lijmer JG, Prins MH, et al. The diagnostic odds ratio: a single indicator of test performance. J Clin Epidemiol. 2003;56:1129-35.</li>
+    <li>Deeks JJ, Altman DG. Diagnostic tests 4: likelihood ratios. BMJ. 2004;329:168-9.</li>
+    <li>Altman DG, Bland JM. Diagnostic tests 2: predictive values. BMJ. 1994;309:102.</li>
+    <li>McInnes MDF, Moher D, Thombs BD, et al. Preferred Reporting Items for a Systematic Review and Meta-analysis of Diagnostic Test Accuracy Studies: the PRISMA-DTA statement. JAMA. 2018;319:388-96.</li>
+  </ol>
+  <p class="small dim">The CRP review, its five studies and all their numbers are illustrative, constructed for teaching.</p>
+  <p class="small faint">Prepared at AIIMS Bhopal with Claude (Anthropic) as drafting and coding assistant.</p>
+  <aside class="notes">The Cochrane DTA Handbook, version 2, is the reference for everything here; the chapter on understanding test accuracy measures is the best single read. QUADAS-3 is new this year. Reitsma and Rutter and Gatsonis are the two models Dr Suresh will use. The BMJ Statistics Notes by Altman, Bland and Deeks are two-page reads that are ideal for residents. PRISMA-DTA tells you what to report. Remember the CRP studies are invented for teaching.</aside>
+</section>
+
+</div></div>
+<script src="../vendor/reveal.js/dist/reveal.js"></script>
+<script src="../vendor/reveal.js/plugin/notes/notes.js"></script>
+<script>
+  Reveal.initialize({
+    width: 1280, height: 720, margin: 0, center: false, transition: 'fade',
+    hash: true, slideNumber: 'c/t', plugins: [RevealNotes]
+  });
+</script>
+</body>
+</html>

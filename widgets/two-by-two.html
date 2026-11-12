@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2×2 Table Lab</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="widget.css">
+<script src="theme.js"></script>
+<script src="dta.js"></script>
+<script src="crp-data.js"></script>
+<style>
+  .tt { border-collapse: separate; border-spacing: 6px; font-size: 15px; }
+  .tt th { border: 0; text-align: center; color: var(--dim); padding: 4px 6px; }
+  .tt th.rh { text-align: left; }
+  .tt td { border: 0; padding: 8px 10px; text-align: center; min-width: 110px; }
+  .tt td.ok { background: var(--good-wash); } .tt td.err { background: var(--bad-wash); }
+  .tt td.tot { color: var(--dim); font-variant-numeric: tabular-nums; }
+  .tt input { width: 86px; font: 600 20px var(--font-head); text-align: center; color: var(--ink); background: var(--paper); border: 1px solid var(--rule); border-radius: 6px; padding: 4px; }
+  .tt .cap { display: block; font-size: 12px; color: var(--dim); margin-top: 3px; }
+  input[type=range] { width: min(420px, 100%); accent-color: var(--band); }
+  .big { font: 600 22px var(--font-head); font-variant-numeric: tabular-nums; }
+  .bar { height: 26px; background: var(--wash); position: relative; border-radius: 4px; overflow: hidden; max-width: 520px; }
+  .bar > span { position: absolute; left: 0; top: 0; bottom: 0; }
+  .bar .pre { background: var(--mark2); } .bar .pp { background: var(--bad); } .bar .pn { background: var(--good); }
+  .barrow { display: grid; grid-template-columns: 170px 1fr 70px; gap: 10px; align-items: center; font-size: 15px; }
+  .barrow .v { font-variant-numeric: tabular-nums; text-align: right; font-weight: 600; }
+</style>
+</head>
+<body>
+<header class="band"><div>
+  <p class="kicker"><a href="../index.html">MetaMastery 3.0 · DTA summary measures</a> · Lab 1</p>
+  <h1>2×2 Table Lab</h1>
+  <p>Load a study or type your own four numbers. Every summary measure, with its 95% confidence interval, updates as you type. Then change the prevalence and the pre-test probability to see what moves and what does not.</p>
+</div></header>
+<main>
+  <section class="panel">
+    <h2>1. Choose a 2×2 table</h2>
+    <div class="row seg" id="presets" role="group" aria-label="Load a study"></div>
+    <div class="scroll">
+      <table class="tt" aria-label="2 by 2 table">
+        <tr><th></th><th>Target condition present</th><th>Target condition absent</th><th>Total</th></tr>
+        <tr><th class="rh">Index test positive</th>
+          <td class="ok"><input id="tp" type="number" min="0" step="1" aria-label="True positives"><span class="cap">TP</span></td>
+          <td class="err"><input id="fp" type="number" min="0" step="1" aria-label="False positives"><span class="cap">FP</span></td>
+          <td class="tot" id="pos"></td></tr>
+        <tr><th class="rh">Index test negative</th>
+          <td class="err"><input id="fn" type="number" min="0" step="1" aria-label="False negatives"><span class="cap">FN</span></td>
+          <td class="ok"><input id="tn" type="number" min="0" step="1" aria-label="True negatives"><span class="cap">TN</span></td>
+          <td class="tot" id="neg"></td></tr>
+        <tr><th class="rh">Total</th><td class="tot" id="dz"></td><td class="tot" id="nd"></td><td class="tot" id="all"></td></tr>
+      </table>
+    </div>
+    <p class="note" id="desc"></p>
+  </section>
+
+  <section class="panel">
+    <h2>2. Summary measures</h2>
+    <div class="stats" aria-live="polite">
+      <div class="stat"><div class="n" id="sn"></div><div class="l">sensitivity <span id="snci"></span></div></div>
+      <div class="stat"><div class="n" id="sp"></div><div class="l">specificity <span id="spci"></span></div></div>
+      <div class="stat warn"><div class="n" id="ppv"></div><div class="l">PPV, at this study's prevalence <span id="ppvci"></span></div></div>
+      <div class="stat warn"><div class="n" id="npv"></div><div class="l">NPV, at this study's prevalence <span id="npvci"></span></div></div>
+      <div class="stat"><div class="n" id="lrp"></div><div class="l">LR+ <span id="lrpci"></span></div></div>
+      <div class="stat"><div class="n" id="lrn"></div><div class="l">LR− <span id="lrnci"></span></div></div>
+      <div class="stat"><div class="n" id="dor"></div><div class="l">diagnostic odds ratio <span id="dorci"></span></div></div>
+      <div class="stat"><div class="n" id="prev"></div><div class="l">prevalence in this study</div></div>
+    </div>
+    <p class="note" id="zero" hidden>One cell is zero, so 0.5 was added to every cell for the likelihood ratios and the DOR. Sensitivity, specificity and predictive values use the raw counts.</p>
+  </section>
+
+  <section class="panel">
+    <h2>3. Same test, different setting</h2>
+    <p class="note">Sensitivity and specificity stay fixed. Move the prevalence to the setting you work in.</p>
+    <div class="row"><label for="pv" class="label">Prevalence</label><input id="pv" type="range" min="1" max="50" step="1"><span class="big" id="pvv"></span></div>
+    <div class="stats">
+      <div class="stat warn"><div class="n" id="ppv2"></div><div class="l">PPV in this setting</div></div>
+      <div class="stat warn"><div class="n" id="npv2"></div><div class="l">NPV in this setting</div></div>
+    </div>
+    <h2 style="margin-top:8px">Per 1000 infants tested</h2>
+    <div class="scroll"><table id="per1000"></table></div>
+    <p class="note">This is how GRADE summary of findings tables for tests present results: true and false results per 1000 people tested, at a stated prevalence.</p>
+  </section>
+
+  <section class="panel">
+    <h2>4. From pre-test to post-test probability</h2>
+    <div class="row"><label for="pre" class="label">Pre-test probability</label><input id="pre" type="range" min="1" max="80" step="1"><span class="big" id="prev2"></span></div>
+    <div class="barrow"><span>Before the test</span><div class="bar"><span class="pre" id="b0"></span></div><span class="v" id="v0"></span></div>
+    <div class="barrow"><span>After a positive test</span><div class="bar"><span class="pp" id="b1"></span></div><span class="v" id="v1"></span></div>
+    <div class="barrow"><span>After a negative test</span><div class="bar"><span class="pn" id="b2"></span></div><span class="v" id="v2"></span></div>
+    <p class="claim" id="msg"></p>
+  </section>
+
+  <footer>Illustrative CRP studies, constructed for teaching. Wilson score intervals for proportions; log-method intervals for likelihood ratios and the DOR.</footer>
+</main>
+<script>
+(function () {
+  var S = window.CRP.studies, D = window.DTA;
+  var ids = ['tp', 'fp', 'fn', 'tn'], el = function (i) { return document.getElementById(i); };
+  var presets = el('presets'), current = 'A';
+  S.forEach(function (s) {
+    var b = document.createElement('button'); b.type = 'button';
+    b.textContent = 'Study ' + s.id + ' · ' + s.threshold + ' mg/L'; b.dataset.id = s.id;
+    b.addEventListener('click', function () { load(s.id); });
+    presets.appendChild(b);
+  });
+  var own = document.createElement('button'); own.type = 'button'; own.textContent = 'Your own'; own.dataset.id = 'own';
+  own.addEventListener('click', function () { current = 'own'; mark(); el('desc').textContent = 'Type your own counts into the four cells.'; el('tp').focus(); });
+  presets.appendChild(own);
+  function mark() { [].forEach.call(presets.children, function (b) { b.setAttribute('aria-pressed', b.dataset.id === current); }); }
+  function load(id) {
+    var s = S.find(function (x) { return x.id === id; }); current = id; mark();
+    el('tp').value = s.TP; el('fp').value = s.FP; el('fn').value = s.FN; el('tn').value = s.TN;
+    el('desc').textContent = s.study + ': ' + s.setting + '. CRP cut-off ' + s.threshold + ' mg/L.';
+    el('pv').value = Math.round(100 * (s.TP + s.FN) / s.N); el('pre').value = el('pv').value;
+    update();
+  }
+  ids.forEach(function (i) { el(i).addEventListener('input', function () { if (current !== 'own') { current = 'own'; mark(); el('desc').textContent = 'Edited counts.'; } update(); }); });
+  el('pv').addEventListener('input', update); el('pre').addEventListener('input', update);
+  function v(i) { var x = parseInt(el(i).value, 10); return isFinite(x) && x >= 0 ? x : 0; }
+  function set(id, txt) { el(id).textContent = txt; }
+  function update() {
+    var tp = v('tp'), fp = v('fp'), fn = v('fn'), tn = v('tn');
+    set('pos', tp + fp); set('neg', fn + tn); set('dz', tp + fn); set('nd', fp + tn); set('all', tp + fp + fn + tn);
+    if (tp + fn === 0 || fp + tn === 0) return;
+    var m = D.measures(tp, fp, fn, tn), P = function (x) { return D.pct(x); };
+    set('sn', P(m.sn)); set('snci', '(' + D.ci(m.snCI[0], m.snCI[1], P) + ')');
+    set('sp', P(m.sp)); set('spci', '(' + D.ci(m.spCI[0], m.spCI[1], P) + ')');
+    set('ppv', P(m.ppv)); set('ppvci', '(' + D.ci(m.ppvCI[0], m.ppvCI[1], P) + ')');
+    set('npv', P(m.npv)); set('npvci', '(' + D.ci(m.npvCI[0], m.npvCI[1], P) + ')');
+    set('lrp', D.num(m.lrp)); set('lrpci', '(' + D.ci(m.lrpCI[0], m.lrpCI[1], function (x) { return D.num(x); }) + ')');
+    set('lrn', D.num(m.lrn)); set('lrnci', '(' + D.ci(m.lrnCI[0], m.lrnCI[1], function (x) { return D.num(x); }) + ')');
+    set('dor', D.num(m.dor)); set('dorci', '(' + D.ci(m.dorCI[0], m.dorCI[1], function (x) { return D.num(x); }) + ')');
+    set('prev', P(m.prev));
+    el('zero').hidden = !m.corrected;
+    // setting
+    var p = +el('pv').value / 100; set('pvv', Math.round(p * 100) + '%');
+    var ppv2 = m.sn * p / (m.sn * p + (1 - m.sp) * (1 - p)), npv2 = m.sp * (1 - p) / (m.sp * (1 - p) + (1 - m.sn) * p);
+    set('ppv2', P(ppv2)); set('npv2', P(npv2));
+    var d1 = 1000 * p, t1 = Math.round(d1 * m.sn), f1 = Math.round((1000 - d1) * (1 - m.sp));
+    var fnn = Math.round(d1) - t1, tnn = Math.round(1000 - d1) - f1;
+    el('per1000').innerHTML = '<tr><th>Result</th><th class="num">Per 1000 tested</th><th>What it means</th></tr>' +
+      '<tr><td>True positives</td><td class="num">' + t1 + '</td><td>Infants with SBI correctly flagged</td></tr>' +
+      '<tr><td>False negatives</td><td class="num">' + fnn + '</td><td>Infants with SBI missed by the test</td></tr>' +
+      '<tr><td>False positives</td><td class="num">' + f1 + '</td><td>Infants without SBI flagged, extra tests and antibiotics</td></tr>' +
+      '<tr><td>True negatives</td><td class="num">' + tnn + '</td><td>Infants without SBI correctly reassured</td></tr>';
+    // pre/post
+    var pre = +el('pre').value / 100, a = D.post(pre, m.lrp), b = D.post(pre, m.lrn);
+    set('prev2', Math.round(pre * 100) + '%');
+    el('b0').style.width = (pre * 100) + '%'; el('b1').style.width = (a * 100) + '%'; el('b2').style.width = (b * 100) + '%';
+    set('v0', D.pct(pre, 0)); set('v1', D.pct(a, 0)); set('v2', D.pct(b, 1));
+    var box = el('msg');
+    box.className = 'claim' + (b < 0.01 ? ' good' : b > 0.02 ? ' warn' : '');
+    box.textContent = 'A positive result moves ' + D.pct(pre, 0) + ' to ' + D.pct(a, 0) +
+      '. A negative result moves it to ' + D.pct(b, 1) + '. ' +
+      (b > 0.02 ? 'Would you send that infant home without more tests?' : 'Low enough to rule out for many clinicians, if the infant looks well.');
+  }
+  load('A');
+})();
+</script>
+</body>
+</html>

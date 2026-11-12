@@ -1,0 +1,89 @@
+{
+ "model": {
+  "mu0": 1.9459101490553132,
+  "sd0": 1.0,
+  "mu1": 3.8066624897703196,
+  "sd1": 1.1,
+  "auc": 0.8946562946390694
+ },
+ "studies": [
+  {
+   "id": "A",
+   "study": "Study A",
+   "setting": "Paediatric emergency department, single centre",
+   "threshold": 20,
+   "N": 640,
+   "TP": 62,
+   "FP": 83,
+   "FN": 15,
+   "TN": 480
+  },
+  {
+   "id": "B",
+   "study": "Study B",
+   "setting": "Three paediatric emergency departments",
+   "threshold": 20,
+   "N": 1100,
+   "TP": 70,
+   "FP": 147,
+   "FN": 29,
+   "TN": 854
+  },
+  {
+   "id": "C",
+   "study": "Study C",
+   "setting": "Neonatal unit, infants up to 28 days",
+   "threshold": 40,
+   "N": 420,
+   "TP": 47,
+   "FP": 14,
+   "FN": 29,
+   "TN": 330
+  },
+  {
+   "id": "D",
+   "study": "Study D",
+   "setting": "Paediatric emergency department, two centres",
+   "threshold": 40,
+   "N": 760,
+   "TP": 41,
+   "FP": 27,
+   "FN": 43,
+   "TN": 649
+  },
+  {
+   "id": "E",
+   "study": "Study E",
+   "setting": "General paediatric admissions",
+   "threshold": 80,
+   "N": 380,
+   "TP": 19,
+   "FP": 2,
+   "FN": 38,
+   "TN": 321
+  }
+ ],
+ "studyE_multi": [
+  {
+   "threshold": 20,
+   "TP": 45,
+   "FP": 47,
+   "FN": 12,
+   "TN": 276
+  },
+  {
+   "threshold": 40,
+   "TP": 33,
+   "FP": 13,
+   "FN": 24,
+   "TN": 310
+  },
+  {
+   "threshold": 80,
+   "TP": 19,
+   "FP": 2,
+   "FN": 38,
+   "TN": 321
+  }
+ ]
+}
