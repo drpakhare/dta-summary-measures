@@ -46,6 +46,11 @@
   .formula { font-family: var(--font-head); font-size: 26px; background: var(--wash); padding: 12px 18px; border-left: 4px solid var(--band); margin-bottom: 12px; }
   .formula .dim { font-family: var(--font-body); font-size: var(--fs-small); }
   .url { font-family: var(--font-head); font-size: 34px; color: var(--band); }
+  /* vertical stacks: self-study slides */
+  .reveal .slides > section.stack > section { padding: 0 !important; width: 1280px; height: 720px; box-sizing: border-box; margin: 0 !important; }
+  .reveal .slides > section.stack > section > * { margin-left: 64px; margin-right: 64px; }
+  .reveal section.ss h2 { padding-right: 260px; }
+  .reveal .ss-tag { position: absolute; top: 30px; right: 40px; margin: 0 !important; font: 600 19px var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: #aeb9dd; z-index: 2; }
 </style>
 </head>
 <body>
@@ -69,6 +74,7 @@
     <div class="card"><h3>At 4 pm</h3><p class="small">Pooling the 2×2 tables: forest plots of sensitivity and specificity, the bivariate model and the SROC curve.</p></div>
   </div>
   <p class="claim">An intervention review pools one effect size per study. A diagnostic accuracy review pools two numbers per study, and they are linked.</p>
+  <p class="small dim">Some slides have self-study slides below them: press the down arrow to read them after the session.</p>
   <aside class="notes">Here is where we are in the day. In an intervention review, each study gives you one effect size, a risk ratio or a mean difference, and you pool it. In a diagnostic accuracy review, each study gives you four counts: true positives, false positives, false negatives, true negatives. From those you get two numbers, sensitivity and specificity, and the two are tied together. That link is the reason DTA meta-analysis needs its own methods, which Dr Suresh will show you. Everything Dr Suresh does starts from the four counts you extract. If those are wrong, nothing downstream can fix it.</aside>
 </section>
 
@@ -123,6 +129,7 @@
 </section>
 
 <!-- 5 -->
+<section class="stack">
 <section>
   <h2>Sensitivity and specificity read down the columns</h2>
   <div class="two">
@@ -142,8 +149,47 @@
   <p class="claim warn">Sensitivity and specificity are not fixed properties of a test. They change with the mix of patients, for example sicker or younger infants.</p>
   <aside class="notes">Sensitivity reads down the SBI column: of 77 infants who truly had SBI, CRP caught 62, so 80.5 percent. Specificity reads down the no-SBI column: of 563 without SBI, 480 tested negative, 85.3 percent. Point out the confidence intervals. Sensitivity rests on only 77 infants, so its interval is wide, from 70 to 88. This is typical: in most DTA studies few people have the disease, so sensitivity is less precise. One misconception to correct: textbooks say sensitivity and specificity do not depend on prevalence. Strictly, they do not depend on prevalence as such, but they do vary with spectrum. A study in sicker infants, or in neonates, can give a higher sensitivity because the infections are more advanced. That is one reason studies disagree, and one reason you extract the setting and the population.</aside>
 </section>
+<section class="ss">
+  <p class="ss-tag">Self-study</p>
+  <h2>Why sensitivity is usually the less precise estimate</h2>
+
+  <div class="two">
+    <div>
+      <p class="small">In Study A, sensitivity rests on 77 infants with SBI. Specificity rests on 563 without.</p>
+      <table>
+        <tr><th>Study A</th><th class="num">Denominator</th><th class="num">95% CI width</th></tr>
+        <tr><td>Sensitivity 80.5%</td><td class="num">77</td><td class="num">17.5 points</td></tr>
+        <tr><td>Specificity 85.3%</td><td class="num">563</td><td class="num">5.8 points</td></tr>
+      </table>
+    </div>
+    <div>
+      <p class="small">Most diagnostic studies enrol far more people without the target condition than with it.</p>
+      <p class="small">So sensitivities scatter more across studies, partly by chance alone. A forest plot of sensitivity can look heterogeneous even when the test behaves the same everywhere.</p>
+    </div>
+  </div>
+  <p class="claim">Always extract the number with the target condition. A sensitivity based on 20 cases is close to a guess.</p>
+  <aside class="notes">Self-study slide, not presented live. The width of a confidence interval depends on the denominator. Sensitivity is estimated only among people who have the condition, and in most studies they are a minority. That is why sensitivity is usually less precise, and why forest plots of sensitivity look more scattered.</aside>
+</section>
+<section class="ss">
+  <p class="ss-tag">Self-study</p>
+  <h2>Spectrum in a real review: TB-LAMP and sputum smear status</h2>
+
+  <p class="small">Inbaraj and colleagues (ICMR-NIRT Chennai, CMC Vellore and others) pooled TB-LAMP against culture for pulmonary TB, with a bivariate model.</p>
+  <table>
+    <tr><th>Group</th><th class="num">Studies</th><th class="num">Sensitivity (95% CI)</th></tr>
+    <tr><td>All participants (main analysis)</td><td class="num">26</td><td class="num">84.1% (78.3 to 88.6)</td></tr>
+    <tr><td>Smear-positive</td><td class="num">16</td><td class="num">95.9% (92.2 to 97.9)</td></tr>
+    <tr><td>Smear-negative</td><td class="num">22</td><td class="num">59.9% (50.7 to 68.4)</td></tr>
+    <tr><td>People living with HIV</td><td class="num">8</td><td class="num">77.1% (60.8 to 87.9)</td></tr>
+  </table>
+  <p class="claim warn">Same test, same reference standard. Sensitivity depends on how much disease the participants have.</p>
+  <p class="cite">Inbaraj LR et al. Lancet Microbe 2025;6:101169.</p>
+  <aside class="notes">Self-study slide. This is spectrum effect in real data. TB-LAMP picks up almost all smear-positive TB, which has a high bacillary load, but only about 60 percent of smear-negative TB. A review that mixes populations with different proportions of smear-negative disease will show heterogeneity in sensitivity. That is why the extraction form asks for severity and prior tests.</aside>
+</section>
+</section>
 
 <!-- 6 -->
+<section class="stack">
 <section>
   <h2>Predictive values read across the rows, and they move with prevalence</h2>
   <div class="two">
@@ -165,6 +211,22 @@
   </div>
   <p class="claim warn">Do not pool PPV and NPV across studies. Pool sensitivity and specificity, then calculate predictive values for a stated prevalence.</p>
   <aside class="notes">Predictive values read across the rows. Of 145 infants with a positive CRP, 62 had SBI, a PPV of 43 percent. Of 495 with a negative CRP, 480 were free of SBI, an NPV of 97 percent. These are what a clinician wants. But look at the table on the right. Same test, same sensitivity and specificity, only the prevalence changes. At 2 percent prevalence, a positive CRP means SBI only one time in ten. In a sick neonatal unit at 30 percent, seven in ten. Our five studies have prevalences from 9 to 18 percent, so their PPVs differ for reasons that have nothing to do with the test. That is why we do not pool predictive values. The rule: pool sensitivity and specificity, then report predictive values at a prevalence that fits your setting. GRADE's summary of findings tables for tests do exactly this, per 1000 patients tested.</aside>
+</section>
+<section class="ss">
+  <p class="ss-tag">Self-study</p>
+  <h2>How a Cochrane review reports predictive values: Truenat</h2>
+
+  <p class="small">Inbaraj and colleagues, Cochrane 2025: of 1000 people tested, 100 with culture-confirmed TB.</p>
+  <table>
+    <tr><th>Per 1000 tested</th><th class="num">Test positive</th><th class="num">of which false</th><th class="num">Test negative</th><th class="num">of which false</th></tr>
+    <tr><td>Truenat MTB</td><td class="num">214</td><td class="num">126</td><td class="num">786</td><td class="num">12</td></tr>
+    <tr><td>Truenat MTB Plus</td><td class="num">127</td><td class="num">36</td><td class="num">873</td><td class="num">9</td></tr>
+  </table>
+  <p class="small">From these: PPV 41% for Truenat MTB and 72% for MTB Plus. NPV 98.5% and 99.0%.</p>
+  <p class="claim">Pooled sensitivity and specificity, applied to a stated prevalence, give the numbers a programme manager needs.</p>
+  <p class="cite">Inbaraj LR et al. Cochrane Database Syst Rev 2025;CD015543.</p>
+  <aside class="notes">Self-study slide. The Cochrane review does not pool predictive values. It pools sensitivity and specificity with a bivariate model and then applies them to 1000 people with 10 percent prevalence. 126 false positives per 1000 for Truenat MTB is the reason the authors flagged its false-positive rate. Participants can load these numbers into Lab 1. The PPVs and NPVs on this slide are calculated from the per-1000 table.</aside>
+</section>
 </section>
 
 <!-- 7 -->
@@ -254,6 +316,7 @@
 </section>
 
 <!-- 10 -->
+<section class="stack">
 <section>
   <h2>Across studies, a lower cut-off buys sensitivity with specificity</h2>
   <div class="two">
@@ -302,6 +365,39 @@
   <p class="claim">Pool sensitivity and specificity together: bivariate model or HSROC. That is the 4 pm session.</p>
   <aside class="notes">Now the five studies in ROC space: sensitivity up, one minus specificity across. The 20 mg/L studies sit top right, high sensitivity, more false positives. The 80 mg/L study sits bottom left. They follow the same grey curve. The disagreement between studies is mostly not heterogeneity in the test, it is a different choice of cut-off. That is the threshold effect, and it produces a negative correlation between sensitivity and specificity across studies. If you ignore it and pool sensitivity and specificity in two separate meta-analyses, you get the red cross: 60 percent and 88 percent. That pair describes no real cut-off; at 88 percent specificity the curve gives about 73 percent. Separate pooling underestimates accuracy and mixes cut-offs. This is why the Cochrane Handbook recommends the bivariate model, or HSROC when cut-offs vary, which Dr Suresh will run. For your extraction form, the lesson is simple: always record the cut-off for every 2 by 2 table.</aside>
 </section>
+<section class="ss">
+  <p class="ss-tag">Self-study</p>
+  <h2>Describing heterogeneity in a diagnostic accuracy review</h2>
+
+  <div class="two">
+    <div>
+      <h3>Why I² misleads here</h3>
+      <p class="small">I² from separate analyses of sensitivity and specificity ignores the link between them and the cut-off.</p>
+      <p class="small">With large studies it is close to 100% almost always. One recent review of an AI cough device reported 99.7% and 98.5%.</p>
+    </div>
+    <div>
+      <h3>What to do instead</h3>
+      <p class="small">Look at paired forest plots and the SROC plot.</p>
+      <p class="small">Report the between-study variances and the 95% prediction region from the bivariate model.</p>
+      <p class="small">Explore prespecified sources: cut-off, design, setting, spectrum, reference standard.</p>
+    </div>
+  </div>
+  <p class="claim">The Cochrane DTA Handbook advises against relying on I² for test accuracy.</p>
+  <aside class="notes">Self-study slide. In intervention reviews participants are used to I squared. In DTA reviews it is not informative: it ignores the correlation and the threshold effect, and with large studies it approaches 100 percent. The bivariate model gives a prediction region, which shows where the accuracy of a new study is likely to fall. Heterogeneity is explored with subgroups or meta-regression on prespecified covariates.</aside>
+</section>
+<section class="ss">
+  <p class="ss-tag">Self-study</p>
+  <h2>Bivariate or HSROC model?</h2>
+
+  <div class="cards c2">
+    <div class="card"><h3>Bivariate model (Reitsma 2005)</h3><p class="small">Gives a summary sensitivity and specificity, with a confidence region and a prediction region.</p><p class="small">Use when studies share a common cut-off.</p></div>
+    <div class="card"><h3>HSROC model (Rutter and Gatsonis 2001)</h3><p class="small">Gives a summary ROC curve, with accuracy and threshold parameters.</p><p class="small">Use when cut-offs vary between studies.</p></div>
+  </div>
+  <p class="small" style="margin-top:16px">Without covariates the two models are the same model, written two ways. Software: Meta-DiSc 2.0 (web), R package mada, Stata metandi or metadta. RevMan draws the forest plots and SROC plots.</p>
+  <p class="claim warn">Avoid pooling sensitivity and specificity separately, and avoid the older Moses-Littenberg SROC method.</p>
+  <aside class="notes">Self-study slide. Two hierarchical models are recommended. The bivariate model is usually chosen when studies use the same cut-off, and gives summary points. The HSROC model is chosen when cut-offs vary, and gives a curve. Without covariates they are mathematically equivalent. Dr Suresh's session shows how to fit them.</aside>
+</section>
+</section>
 
 <!-- 11 -->
 <section>
@@ -324,8 +420,9 @@
 </section>
 
 <!-- 12 -->
+<section class="stack">
 <section>
-  <h2>Five decisions to write into your protocol before you extract</h2>
+  <h2>Six decisions to write into your protocol before you extract</h2>
   <div class="grid6">
     <div class="card"><h3>Inconclusive results</h3><p class="small">Haemolysed samples, failed tests. Extract how many, and with which reference result.</p></div>
     <div class="card"><h3>Unverified participants</h3><p class="small">No reference standard done. Record the number. Never count them as negative.</p></div>
@@ -337,8 +434,56 @@
   <p class="claim">QUADAS-3 judges risk of bias for each accuracy estimate, and its new Analysis domain asks about exactly these choices.</p>
   <aside class="notes">These are the judgement calls that make two extractors disagree, so settle them in the protocol. Inconclusive results: haemolysed samples, test failures. Studies usually drop them, which flatters the test; extract how many there were and, if reported, their reference results. Unverified participants: those who never got the reference standard; extract the number, never assume they were negative. Several cut-offs: extract a table for each one, and decide in advance which goes in the main analysis, for example the study's prespecified cut-off. Unit of analysis: a study that counts episodes or lesions, not infants, double counts; take one per participant. Several readers: decide whose reading you take. Overlapping cohorts: the same infants in two papers must be counted once. QUADAS-3, published this year in the Annals, now assesses each accuracy estimate rather than the whole study, and its Analysis domain, which replaces Flow and Timing, asks about exactly these choices. Your extraction form must capture enough to answer it.</aside>
 </section>
+<section class="ss">
+  <p class="ss-tag">Self-study</p>
+  <h2>Study design changes accuracy: scrub typhus LAMP</h2>
+
+  <p class="small">Dixit and colleagues (Central University of Tamil Nadu, CMC Vellore, PGIMER, SCB Cuttack) pooled six LAMP studies for scrub typhus.</p>
+  <table>
+    <tr><th>Design of included studies</th><th class="num">Sensitivity</th><th class="num">Specificity</th></tr>
+    <tr><td>Case-control (two-gate)</td><td class="num">84.5%</td><td class="num">73.9%</td></tr>
+    <tr><td>Cross-sectional (single-gate)</td><td class="num">52.6%</td><td class="num">96.6%</td></tr>
+  </table>
+  <p class="small">In meta-regression, study design explained heterogeneity (p = 0.005); reference standard and QUADAS-2 score did not.</p>
+  <p class="claim">Extract the design of every study. It is one of the strongest sources of heterogeneity.</p>
+  <p class="cite">Dixit R et al. Front Microbiol 2025;15:1516921.</p>
+  <aside class="notes">Self-study slide. Case-control or two-gate designs pick cases and non-cases from different places. They usually give distorted accuracy, because the cases are often more severe and the controls often healthy. Here, sensitivity was much higher in case-control studies. The lesson for extraction: record the design and analyse by it.</aside>
+</section>
+<section class="ss">
+  <p class="ss-tag">Self-study</p>
+  <h2>Accuracy is always accuracy against something: the reference standard</h2>
+
+  <p class="small">The same index test, Truenat, pooled against different reference standards in one 2024 review:</p>
+  <table>
+    <tr><th>Compared with</th><th class="num">Sensitivity (95% CI)</th><th class="num">Specificity (95% CI)</th></tr>
+    <tr><td>LJ culture</td><td class="num">86% (79 to 91)</td><td class="num">86% (82 to 90)</td></tr>
+    <tr><td>MGIT culture</td><td class="num">88% (82 to 92)</td><td class="num">79% (57 to 92)</td></tr>
+    <tr><td>Xpert MTB/RIF</td><td class="num">92% (80 to 97)</td><td class="num">92% (56 to 99)</td></tr>
+  </table>
+  <p class="small">An imperfect reference standard misclassifies people, and the index test is then blamed for the reference standard's errors.</p>
+  <p class="claim">Record the reference standard for every 2×2 table, and analyse by it.</p>
+  <p class="cite">Mahmoudi S, Sadegh Moghaddasi AH. Expert Rev Anti Infect Ther 2024. doi:10.1080/14787210.2024.2389876</p>
+  <aside class="notes">Self-study slide. Sensitivity and specificity are only defined against a reference standard. Here the same test looks different against solid culture, liquid culture and another molecular test. Note also how wide some intervals are. Options when the reference is imperfect: restrict to the best reference standard, use a composite reference, or use latent class models, which need statistical help.</aside>
+</section>
+<section class="ss">
+  <p class="ss-tag">Self-study</p>
+  <h2>Check the unit of analysis before you pool</h2>
+
+  <p class="small">A 2026 review of TimBre, an AI device that analyses cough sounds for pulmonary TB, included three primary studies. The studies counted different things:</p>
+  <table>
+    <tr><th>Included study</th><th class="num">Unit</th><th class="num">Number</th></tr>
+    <tr><td>2022 studies</td><td class="num">participants</td><td class="num">474 and 126</td></tr>
+    <tr><td>2023 study</td><td class="num">participants</td><td class="num">1191</td></tr>
+    <tr><td>2025 multi-country study</td><td class="num">cough recordings</td><td class="num">724,694</td></tr>
+  </table>
+  <p class="claim warn">A table counting recordings is not comparable with one counting people. Ask for, or extract, results per person.</p>
+  <p class="cite">Tejesh S et al. Int J Community Med Public Health 2026;13(5):2454-9.</p>
+  <aside class="notes">Self-study slide. Recordings, samples, lesions or episodes from the same person are not independent. Mixing them with person-level results gives very narrow intervals and inflated weight. The extraction form records the unit of analysis for each table.</aside>
+</section>
+</section>
 
 <!-- 13 -->
+<section class="stack">
 <section>
   <h2>What goes on a diagnostic accuracy extraction form</h2>
   <div class="cards c3">
@@ -351,6 +496,31 @@
   </div>
   <p class="small dim" style="margin-top:16px">A ready-to-use form is in your handout and on the session website.</p>
   <aside class="notes">Here is the skeleton of the form. Most of it feeds two places: the characteristics of included studies table, and QUADAS-3. Two items deserve stress. First, design: a two-gate or diagnostic case-control design, cases from one place and healthy controls from another, inflates accuracy, sometimes a lot. Record it so you can do a sensitivity analysis. Second, whether the cut-off was prespecified or picked after looking at the data; data-driven cut-offs are optimistic. In the results box, record not just the four numbers but how you got them: copied from a table, back-calculated, or obtained from the authors. Pilot the form on two or three studies with two extractors before you start. The handout has the full form with these fields.</aside>
+</section>
+<section class="ss">
+  <p class="ss-tag">Self-study</p>
+  <h2>Certainty of evidence for test accuracy: GRADE</h2>
+
+  <div class="two">
+    <div>
+      <p class="small">Certainty is rated separately for sensitivity and specificity, and presented as TP, FN, FP and TN per 1000 tested.</p>
+      <table>
+        <tr><th>GRADE domain</th><th>In a test accuracy review</th></tr>
+        <tr><td>Risk of bias</td><td>QUADAS-3 judgements</td></tr>
+        <tr><td>Indirectness</td><td>Population, setting, test, reference</td></tr>
+        <tr><td>Inconsistency</td><td>Unexplained heterogeneity</td></tr>
+        <tr><td>Imprecision</td><td>Width of CIs, per 1000 effects</td></tr>
+        <tr><td>Publication bias</td><td>Hard to assess; Deeks' test</td></tr>
+      </table>
+    </div>
+    <div>
+      <p class="small">Truenat MTB, Cochrane 2025:</p>
+      <p class="small">Sensitivity 87.6%, <strong>high</strong> certainty.<br>Specificity 86.1% (70.1 to 94.3), <strong>moderate</strong> certainty.</p>
+      <p class="small dim">Day 3 covers GRADE in detail.</p>
+    </div>
+  </div>
+  <aside class="notes">Self-study slide. This links to the GRADE sessions on Day 3. For tests, certainty is rated for sensitivity and specificity separately. Funnel plots and Egger's test are not suitable for DTA reviews; Deeks' funnel plot test is the usual option, and it has low power. The Truenat review is a good worked example of a summary of findings table for a test.</aside>
+</section>
 </section>
 
 <!-- 14 -->
@@ -376,7 +546,103 @@
   <aside class="notes">Back to the question we started with. A CRP of 45 is above the 40 cut-off. Studies C and D at 40 give an LR+ of about 12 to 15; take 13. For an infant with a 10 percent pre-test risk, odds 0.11 times 13 is about 1.4, so roughly 60 percent. That moves you a long way, past most thresholds for treating as SBI. But remember the other side: a CRP under 20 still left about 3 percent. Three things to carry out. The 2 by 2 table is your data: check which way round it is, rebuild it when the paper hides it, and always record the cut-off. Pool sensitivity and specificity together, not apart. And give clinicians predictive values and likelihood ratios worked out from pooled values at a realistic prevalence. Dr Suresh will now show you how to pool. Questions?</aside>
 </section>
 
+<!-- 15b -->
+<section class="stack">
+<section>
+  <h2>After the session: four recent India-relevant reviews to read</h2>
+  <div class="cards c2">
+    <div class="card"><h3>Truenat for pulmonary TB</h3><p class="small">Cochrane 2025. Bivariate model, per 1000 table, GRADE.</p></div>
+    <div class="card"><h3>TB-LAMP for pulmonary and extrapulmonary TB</h3><p class="small">Lancet Microbe 2025. Subgroups, sparse data.</p></div>
+    <div class="card"><h3>LAMP for scrub typhus</h3><p class="small">Front Microbiol 2025. Six studies, mixed reference standards.</p></div>
+    <div class="card"><h3>TimBre cough device for pulmonary TB</h3><p class="small">IJCMPH 2026. Univariate pooling, units of analysis.</p></div>
+  </div>
+  <p class="small dim" style="margin-top:16px">Press the down arrow for each review. The handout has the full case notes.</p>
+  <aside class="notes">This section is for participants to read after the session. Four reviews with Indian authors or Indian relevance, each chosen because it illustrates something from today. The questions on each slide are things to check in any review, not a judgement of the authors.</aside>
+</section>
+<section class="ss">
+  <p class="ss-tag">Self-study</p>
+  <h2>Truenat assays for pulmonary TB and rifampicin resistance</h2>
+
+  <div class="two">
+    <div>
+      <p class="small"><strong>Question:</strong> accuracy of Truenat MTB, MTB Plus and MTB-RIF Dx in people aged 10 and over, against culture.</p>
+      <p class="small"><strong>Data:</strong> 10 studies. Truenat MTB: 6 studies, 4081 participants. MTB Plus: 4 studies, 3073.</p>
+      <p class="small"><strong>Methods:</strong> QUADAS-2 and QUADAS-C, bivariate model, GRADE.</p>
+    </div>
+    <div>
+      <table>
+        <tr><th>Test</th><th class="num">Sensitivity</th><th class="num">Specificity</th></tr>
+        <tr><td>MTB</td><td class="num">87.6%</td><td class="num">86.1%</td></tr>
+        <tr><td>MTB Plus</td><td class="num">90.6%</td><td class="num">95.7%</td></tr>
+      </table>
+      <p class="small"><strong>Read it for:</strong> the per 1000 table, the three studies that compared Truenat with Xpert Ultra in the same people, and the GRADE ratings.</p>
+    </div>
+  </div>
+  <p class="cite">Inbaraj LR, Daniel J, ... Takwoingi Y. Cochrane Database Syst Rev 2025;3:CD015543.</p>
+  <aside class="notes">Self-study slide. A model Cochrane DTA review led from ICMR-NIRT. Good for seeing comparative accuracy done properly: only studies that tested both Truenat and Xpert Ultra in the same people were used for the comparison.</aside>
+</section>
+<section class="ss">
+  <p class="ss-tag">Self-study</p>
+  <h2>TB-LAMP for pulmonary and extrapulmonary TB</h2>
+
+  <div class="two">
+    <div>
+      <p class="small"><strong>Question:</strong> accuracy of TB-LAMP against culture, to inform the 2024 WHO guideline update.</p>
+      <p class="small"><strong>Data:</strong> 29 studies. Main analysis 26 studies, 18,297 participants. Three Indian studies.</p>
+      <p class="small"><strong>Methods:</strong> QUADAS-2, bivariate random-effects model, person as the unit of analysis, GRADE.</p>
+    </div>
+    <div>
+      <table>
+        <tr><th>Analysis</th><th class="num">Sens.</th><th class="num">Spec.</th></tr>
+        <tr><td>All studies</td><td class="num">84.1%</td><td class="num">96.1%</td></tr>
+        <tr><td>Low risk of bias only</td><td class="num">80.1%</td><td class="num">96.7%</td></tr>
+      </table>
+      <p class="small"><strong>Read it for:</strong> a sensitivity analysis restricted to low risk of bias, spectrum subgroups, and how sparse extrapulmonary data are reported study by study.</p>
+    </div>
+  </div>
+  <p class="cite">Inbaraj LR, Srinivasalu VA, ... Takwoingi Y. Lancet Microbe 2025;6:101169.</p>
+  <aside class="notes">Self-study slide. Note that restricting to low risk of bias studies lowered sensitivity a little. Note also that for most extrapulmonary samples there were only one or two studies, so results are shown study by study rather than pooled.</aside>
+</section>
+<section class="ss">
+  <p class="ss-tag">Self-study</p>
+  <h2>Isothermal (LAMP) assays for scrub typhus</h2>
+
+  <div class="two">
+    <div>
+      <p class="small"><strong>Question:</strong> accuracy of isothermal assays for rickettsial disease; all included studies used LAMP for scrub typhus.</p>
+      <p class="small"><strong>Data:</strong> 6 studies, 4 from India and 2 from Thailand. Reference standards: STICS criteria, IFA, nested PCR, PCR with ELISA.</p>
+      <p class="small"><strong>Methods:</strong> QUADAS-2, bivariate model in Meta-DiSc 2.0. Some 2×2 tables derived from reported sensitivity and specificity.</p>
+    </div>
+    <div>
+      <p class="small">Sensitivity 66% (40 to 85)<br>Specificity 94% (81 to 98)</p>
+      <p class="small"><strong>Questions to ask:</strong> How was each 2×2 table obtained? Can results against four different reference standards be pooled? What can six studies tell us, given these intervals?</p>
+    </div>
+  </div>
+  <p class="cite">Dixit R, Manikandan S, ... Behera SK. Front Microbiol 2025;15:1516921.</p>
+  <aside class="notes">Self-study slide. A small review that uses the right model. Its value for teaching is in the questions: back-calculated tables, mixed reference standards and wide intervals from few studies. Study design explained much of the heterogeneity, as the earlier self-study slide showed.</aside>
+</section>
+<section class="ss">
+  <p class="ss-tag">Self-study</p>
+  <h2>TimBre acoustic device for pulmonary TB</h2>
+
+  <div class="two">
+    <div>
+      <p class="small"><strong>Question:</strong> accuracy of an AI device that analyses cough sounds for pulmonary TB.</p>
+      <p class="small"><strong>Data:</strong> 3 primary studies, from one research group. Reference standards included smear, Xpert, Xpert Ultra and chest X-ray.</p>
+      <p class="small"><strong>Methods:</strong> QUADAS-2; sensitivity and specificity pooled separately (univariate random effects) in R.</p>
+    </div>
+    <div>
+      <p class="small">Sensitivity 71% (68 to 75)<br>Specificity 76% (60 to 87)<br>I² 99.7% and 98.5%</p>
+      <p class="small"><strong>Questions to ask:</strong> Would a bivariate model change the estimates? Do the studies count people or recordings? Which reference standard defines TB in each study?</p>
+    </div>
+  </div>
+  <p class="cite">Tejesh S, Manna A, ... Nirupama AY. Int J Community Med Public Health 2026;13(5):2454-9.</p>
+  <aside class="notes">Self-study slide. A recent review of an Indian AI screening device, registered on PROSPERO. The authors themselves list the small number of studies and the heterogeneity as limitations and call for independent validation. Use it to practise the questions from today, and connect it to the session on AI in evidence synthesis.</aside>
+</section>
+</section>
+
 <!-- 16 -->
+<section class="stack">
 <section>
   <h2>Sources and further reading</h2>
   <ol class="sources two">
@@ -393,6 +659,18 @@
   <p class="small faint">Prepared at AIIMS Bhopal with Claude (Anthropic) as drafting and coding assistant.</p>
   <aside class="notes">The Cochrane DTA Handbook, version 2, is the reference for everything here; the chapter on understanding test accuracy measures is the best single read. QUADAS-3 is new this year. Reitsma and Rutter and Gatsonis are the two models Dr Suresh will use. The BMJ Statistics Notes by Altman, Bland and Deeks are two-page reads that are ideal for residents. PRISMA-DTA tells you what to report. Remember the CRP studies are invented for teaching.</aside>
 </section>
+<section>
+  <h2>Sources: the India-relevant reviews</h2>
+  <ol class="sources">
+    <li>Inbaraj LR, Daniel J, Sathya Narayanan MK, et al. Truenat MTB assays for pulmonary tuberculosis and rifampicin resistance in adults and adolescents. Cochrane Database Syst Rev. 2025;3:CD015543.</li>
+    <li>Inbaraj LR, Srinivasalu VA, Sathya Narayanan MK, et al. Diagnostic accuracy of low-complexity, manual nucleic acid amplification tests for the detection of pulmonary and extrapulmonary tuberculosis in adults and adolescents: a systematic review and meta-analysis. Lancet Microbe. 2025;6:101169.</li>
+    <li>Dixit R, Manikandan S, Prakash JAJ, et al. The diagnostic accuracy of point-of-care nucleic acid-based isothermal amplification assays for scrub typhus: a systematic review and meta-analysis. Front Microbiol. 2025;15:1516921.</li>
+    <li>Tejesh S, Manna A, Yazhini R, et al. Diagnostic accuracy of the TimBre acoustic device for detecting pulmonary tuberculosis: a systematic review and meta-analysis. Int J Community Med Public Health. 2026;13(5):2454-9.</li>
+    <li>Mahmoudi S, Sadegh Moghaddasi AH. Evaluation of Truenat assays for the diagnosis of pulmonary and extrapulmonary tuberculosis: a systematic review and meta-analysis. Expert Rev Anti Infect Ther. 2024. doi:10.1080/14787210.2024.2389876</li>
+  </ol>
+  <aside class="notes">Full references for the real reviews used in the self-study slides and the handout.</aside>
+</section>
+</section>
 
 </div></div>
 <script src="../vendor/reveal.js/dist/reveal.js"></script>
@@ -400,7 +678,7 @@
 <script>
   Reveal.initialize({
     width: 1280, height: 720, margin: 0, center: false, transition: 'fade',
-    hash: true, slideNumber: 'c/t', plugins: [RevealNotes]
+    hash: true, slideNumber: 'h.v', plugins: [RevealNotes]
   });
 </script>
 </body>

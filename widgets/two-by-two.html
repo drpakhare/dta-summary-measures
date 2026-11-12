@@ -31,7 +31,7 @@
 <header class="band"><div>
   <p class="kicker"><a href="../index.html">MetaMastery 3.0 · DTA summary measures</a> · Lab 1</p>
   <h1>2×2 Table Lab</h1>
-  <p>Load a study or type your own four numbers. Every summary measure, with its 95% confidence interval, updates as you type. Then change the prevalence and the pre-test probability to see what moves and what does not.</p>
+  <p>Load an illustrative CRP study, real per 1000 figures from the Cochrane review of Truenat, or your own four numbers. Every summary measure, with its 95% confidence interval, updates as you type. Then change the prevalence and the pre-test probability to see what moves and what does not.</p>
 </div></header>
 <main>
   <section class="panel">
@@ -91,16 +91,19 @@
     <p class="claim" id="msg"></p>
   </section>
 
-  <footer>Illustrative CRP studies, constructed for teaching. Wilson score intervals for proportions; log-method intervals for likelihood ratios and the DOR.</footer>
+  <footer>CRP studies are illustrative, constructed for teaching. Truenat figures are from Inbaraj LR et al., Cochrane Database Syst Rev 2025;CD015543. Wilson score intervals for proportions; log-method intervals for likelihood ratios and the DOR.</footer>
 </main>
 <script>
 (function () {
-  var S = window.CRP.studies, D = window.DTA;
+  var S = window.CRP.studies.map(function (s) { return Object.assign({ label: 'Study ' + s.id + ' · ' + s.threshold + ' mg/L', desc: s.study + ': ' + s.setting + '. CRP cut-off ' + s.threshold + ' mg/L. Illustrative.' }, s); }), D = window.DTA;
+  var REAL = 'Per 1000 people tested with 10% prevalence, from pooled estimates in Inbaraj LR et al., Cochrane Database Syst Rev 2025;CD015543. These are not one study\'s counts, so ignore the confidence intervals.';
+  S.push({ id: 'TM', label: 'Truenat MTB · per 1000', TP: 88, FP: 126, FN: 12, TN: 774, N: 1000, desc: 'Truenat MTB against culture. ' + REAL });
+  S.push({ id: 'TP', label: 'Truenat MTB Plus · per 1000', TP: 91, FP: 36, FN: 9, TN: 864, N: 1000, desc: 'Truenat MTB Plus against culture. ' + REAL });
   var ids = ['tp', 'fp', 'fn', 'tn'], el = function (i) { return document.getElementById(i); };
   var presets = el('presets'), current = 'A';
   S.forEach(function (s) {
     var b = document.createElement('button'); b.type = 'button';
-    b.textContent = 'Study ' + s.id + ' · ' + s.threshold + ' mg/L'; b.dataset.id = s.id;
+    b.textContent = s.label; b.dataset.id = s.id;
     b.addEventListener('click', function () { load(s.id); });
     presets.appendChild(b);
   });
@@ -111,7 +114,7 @@
   function load(id) {
     var s = S.find(function (x) { return x.id === id; }); current = id; mark();
     el('tp').value = s.TP; el('fp').value = s.FP; el('fn').value = s.FN; el('tn').value = s.TN;
-    el('desc').textContent = s.study + ': ' + s.setting + '. CRP cut-off ' + s.threshold + ' mg/L.';
+    el('desc').textContent = s.desc;
     el('pv').value = Math.round(100 * (s.TP + s.FN) / s.N); el('pre').value = el('pv').value;
     update();
   }

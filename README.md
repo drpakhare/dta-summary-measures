@@ -12,6 +12,7 @@ By the end of the session, participants will be able to:
 4. Use likelihood ratios to move from pre-test to post-test probability.
 5. Explain ROC curves, the area under the curve and the threshold effect, and why sensitivity and specificity must be pooled jointly.
 6. Rebuild a 2×2 table from the figures a paper reports, and check it.
-7. Make and record extraction decisions on inconclusive results, unverified participants, multiple cut-offs and units of analysis, in line with QUADAS-3.
+7. Read a published diagnostic accuracy review critically, using recent India-relevant examples.
+8. Make and record extraction decisions on inconclusive results, unverified participants, multiple cut-offs and units of analysis, in line with QUADAS-3.
 
 All study data in this repository are illustrative, constructed for teaching.

@@ -19,6 +19,13 @@
   .tt td, .tt th { text-align: center; } .tt th:first-child { text-align: left; }
   .tt td.ok { background: var(--good-wash); } .tt td.err { background: var(--bad-wash); }
   .print { font: 600 14px var(--font-body); padding: 7px 14px; border-radius: 8px; border: 1px solid var(--rule); background: var(--paper); color: var(--ink); cursor: pointer; }
+  .deeper { background: var(--wash); border-left: 4px solid var(--band); padding: 10px 14px; display: grid; gap: 6px; }
+  .deeper > .label { font-weight: 700; }
+  .deeper p { margin: 0; }
+  .case { border-top: 3px solid var(--band); padding-top: 8px; display: grid; gap: 6px; }
+  .case p { margin: 0; }
+  .case .ask { background: var(--warn-wash); border-left: 4px solid var(--warn); padding: 8px 12px; }
+  .cite2 { font-size: 13px; color: var(--dim); }
   .toc { columns: 2; column-gap: 32px; font-size: 15px; }
   a { color: var(--ink); text-underline-offset: 3px; }
   @media print {
@@ -37,7 +44,7 @@
 <header class="band"><div>
   <p class="kicker"><a href="index.html">MetaMastery 3.0 · DTA summary measures</a> · Participant handout</p>
   <h1>Data extraction and summary measures for diagnostic accuracy studies</h1>
-  <p>Reference notes for the session on 13 November 2026: the 2×2 table, sensitivity, specificity, predictive values, likelihood ratios, the diagnostic odds ratio and ROC curves, and how to extract them from published studies.</p>
+  <p>Reference notes for the session on 13 November 2026: the 2×2 table, sensitivity, specificity, predictive values, likelihood ratios, the diagnostic odds ratio and ROC curves, and how to extract them from published studies, with four recent India-relevant reviews as case studies.</p>
 </div></header>
 <main>
   <div class="row noprint"><button class="print" onclick="window.print()">Print or save as PDF</button><span class="note">Prints in black and white on A4.</span></div>
@@ -52,11 +59,15 @@
       <li><a href="#s5">Likelihood ratios</a></li>
       <li><a href="#s6">The diagnostic odds ratio</a></li>
       <li><a href="#s7">Cut-offs, ROC curves and the threshold effect</a></li>
-      <li><a href="#s8">Rebuilding a 2×2 table</a></li>
-      <li><a href="#s9">Decisions for your protocol</a></li>
+      <li><a href="#s8">Rebuilding a 2×2 table from what a paper reports</a></li>
+      <li><a href="#s9">Decisions to write into your protocol before you extract</a></li>
+      <li><a href="#sD">Study design, the reference standard and the unit of analysis</a></li>
+      <li><a href="#sG">Certainty of evidence for test accuracy (GRADE)</a></li>
       <li><a href="#s10">The extraction form</a></li>
       <li><a href="#s11">Common errors checklist</a></li>
       <li><a href="#s12">Dataset for the 4 pm hands-on</a></li>
+      <li><a href="#sC">Case studies: four recent India-relevant reviews</a></li>
+      <li><a href="#sR">How to read a diagnostic accuracy review: a checklist</a></li>
       <li><a href="#s13">Further reading</a></li>
     </ol>
   </section>
@@ -78,7 +89,7 @@
       <tr><th>Total</th><td>77</td><td>563</td><td>640</td></tr>
     </table></div>
     <ul>
-      <li>RevMan Web and most R packages (mada, meta, metadta) take the cells in the order <strong>TP, FP, FN, TN</strong>.</li>
+      <li>RevMan Web, Meta-DiSc 2.0 and the R package mada all work from the four cells; RevMan takes them in the order <strong>TP, FP, FN, TN</strong>.</li>
       <li>Many papers print the table transposed, with the test in the columns. Swapping FP and FN is the commonest extraction error. Always check that TP + FN equals the number with the target condition.</li>
       <li>Record a zero cell as zero. Software adds 0.5 where it needs to.</li>
     </ul>
@@ -99,6 +110,11 @@
       <tr><td>Youden index</td><td>Sn + Sp − 1</td><td class="num">0.66</td><td>Single-cut-off summary; 0 is useless, 1 perfect</td><td>No</td></tr>
     </table></div>
     <p class="note">Study A 95% confidence intervals (Wilson score for proportions, log method for ratios): sensitivity 70.3 to 87.8%; specificity 82.1 to 87.9%; PPV 35.0 to 50.9%; NPV 95.1 to 98.2%; LR+ 4.35 to 6.85; LR− 0.14 to 0.36; DOR 13.0 to 44.0. Overall accuracy, (TP + TN) / N, is not listed because it depends on prevalence and hides which kind of error a test makes.</p>
+  
+    <div class="deeper"><span class="label">Going deeper: why sensitivity is usually less precise</span>
+      <p>Sensitivity is estimated only among people who have the target condition; specificity only among people who do not. Most diagnostic studies have far fewer of the first. In Study A, sensitivity rests on 77 infants and its 95% CI is 17.5 percentage points wide; specificity rests on 563 infants and its CI is 5.8 points wide. Across studies, small denominators make sensitivities scatter by chance alone, so a forest plot of sensitivity can look heterogeneous even when the test behaves the same everywhere. Always extract the number with the target condition, and be wary of sensitivity estimates from studies with very few cases.</p>
+      <p>For confidence intervals of single proportions, use the Wilson score method (or the exact Clopper-Pearson method). The simple "p ± 1.96 SE" interval misbehaves near 0% and 100%, where sensitivity and specificity often lie.</p>
+    </div>
   </section>
 
   <section id="s4">
@@ -114,6 +130,13 @@
     </table></div>
     <p class="note">All rows use Study A's sensitivity 80.5% and specificity 85.3%. The "per 1000 tested" format is the one used in GRADE summary of findings tables for tests.</p>
     <p>Sensitivity and specificity are not fixed either. They vary with the <strong>spectrum</strong> of patients (severity, age, prior testing, setting). Extract these details so that heterogeneity can be explored.</p>
+  
+    <div class="deeper"><span class="label">Going deeper: spectrum, a real example</span>
+      <p>In a 2025 review of TB-LAMP against culture for pulmonary TB (Inbaraj and colleagues, ICMR-NIRT Chennai and CMC Vellore with WHO and Birmingham), pooled sensitivity was 84.1% overall, 95.9% in smear-positive participants (16 studies) and 59.9% in smear-negative participants (22 studies). Same test, same reference standard: sensitivity depended on how much disease the participants had. Reviews that mix populations with different proportions of smear-negative disease will show heterogeneity in sensitivity for this reason.</p>
+    </div>
+    <div class="deeper"><span class="label">Going deeper: how a Cochrane review presents predictive values</span>
+      <p>The 2025 Cochrane review of Truenat assays (Inbaraj and colleagues) pooled sensitivity and specificity with a bivariate model and then applied them to 1000 people, of whom 100 have culture-confirmed TB. For Truenat MTB, 214 test positive, of whom 126 are false positives; 786 test negative, of whom 12 are false negatives. For Truenat MTB Plus, 127 test positive (36 false) and 873 negative (9 false). From these, PPV is 41% for Truenat MTB and 72% for MTB Plus; NPV is 98.5% and 99.0%. The 126 false positives per 1000 are why the authors flagged Truenat MTB's false-positive rate. Load these numbers into Lab 1 to explore other prevalences.</p>
+    </div>
   </section>
 
   <section id="s5">
@@ -128,6 +151,10 @@
       <tr><td>1 to 2</td><td>0.5 to 1</td><td>Rarely matters</td></tr>
     </table></div>
     <p class="note">A rough guide, not a rule: the right threshold depends on what a missed diagnosis or a false alarm costs. In a meta-analysis, calculate summary likelihood ratios from the pooled sensitivity and specificity of the bivariate model; do not pool likelihood ratios directly.</p>
+  
+    <div class="deeper"><span class="label">Going deeper: using likelihood ratios in practice</span>
+      <p>Likelihood ratios let a clinician start from their own pre-test probability, which may differ from any study's prevalence. A Fagan nomogram does the odds arithmetic graphically; Lab 1 does it with a slider. For tests with several result levels (for example CRP under 20, 20 to 80, over 80 mg/L), a likelihood ratio can be calculated for each level, which keeps more information than a single cut-off. In a meta-analysis, report summary likelihood ratios derived from the bivariate model's pooled sensitivity and specificity, with their confidence intervals; pooling LRs directly can give impossible combinations.</p>
+    </div>
   </section>
 
   <section id="s6">
@@ -144,6 +171,13 @@
       <li>Across studies, different cut-offs make sensitivity and specificity <strong>negatively correlated</strong>: the <strong>threshold effect</strong>. Pooling them in two separate meta-analyses ignores this. In our five studies, separate pooling gives sensitivity 60% and specificity 88%, a point below the curve the studies follow (which gives about 73% sensitivity at 88% specificity).</li>
       <li>Use the <strong>bivariate random-effects model</strong> (Reitsma 2005) for a summary sensitivity and specificity at a common cut-off, or the <strong>HSROC model</strong> (Rutter and Gatsonis 2001) for a summary ROC curve when cut-offs vary. The two are mathematically equivalent when there are no covariates. Covered in the 4 pm session.</li>
     </ul>
+  
+    <div class="deeper"><span class="label">Going deeper: describing heterogeneity</span>
+      <p>Heterogeneity is expected in test accuracy reviews. I² calculated from separate univariate analyses of sensitivity and specificity is not informative: it ignores the correlation between them and the threshold effect, and with large studies it approaches 100% almost always (one 2026 review of an AI cough-sound device reported 99.7% and 98.5%). Instead, inspect the paired forest plots and the SROC plot; report the between-study variances and the 95% prediction region from the bivariate model, which shows where a new study's accuracy is likely to fall; and explore prespecified sources of variation, such as cut-off, design, setting, spectrum and reference standard, with subgroup analysis or meta-regression.</p>
+    </div>
+    <div class="deeper"><span class="label">Going deeper: models and software</span>
+      <p><strong>Bivariate model</strong> (Reitsma 2005): summary sensitivity and specificity with a confidence region and a prediction region; use when studies share a common cut-off. <strong>HSROC model</strong> (Rutter and Gatsonis 2001): a summary ROC curve with accuracy, threshold and shape parameters; use when cut-offs vary. Without covariates the two are the same model written two ways. Avoid separate univariate pooling and the older Moses-Littenberg SROC method. Software: Meta-DiSc 2.0 (free, web-based), the R package mada, and Stata's metandi or metadta; RevMan draws forest plots and SROC plots. When a test has data at several cut-offs per study, multiple-threshold models can use all of them; these need statistical support.</p>
+    </div>
   </section>
 
   <section id="s8">
@@ -179,8 +213,33 @@
     <p><strong>QUADAS-3</strong> (Whiting et al., Ann Intern Med 2026) asks you to draw a flow diagram for each study, identify the accuracy estimates you will use, and assess risk of bias for each estimate rather than for the study as a whole. Its new <strong>Analysis</strong> domain replaces Flow and Timing. Your extraction form must collect the numbers it needs.</p>
   </section>
 
+  <section id="sD">
+    <h2>10. Study design, the reference standard and the unit of analysis</h2>
+    <h3>Design</h3>
+    <p>A <strong>single-gate</strong> (cross-sectional) study enrols one group of people in whom the test would be used in practice, and gives everyone the index test and the reference standard. A <strong>two-gate</strong> (diagnostic case-control) study recruits people known to have the condition and people known not to have it from different sources. Two-gate designs usually distort accuracy, because cases are often more severe and controls often healthier than in practice.</p>
+    <p><em>Real example.</em> In a 2025 review of LAMP for scrub typhus (Dixit and colleagues: Central University of Tamil Nadu, CMC Vellore, PGIMER Chandigarh, SCB Medical College Cuttack), case-control studies gave a pooled sensitivity of 84.5% and specificity of 73.9%; cross-sectional studies gave 52.6% and 96.6%. Study design explained heterogeneity in meta-regression (p = 0.005).</p>
+    <h3>Reference standard</h3>
+    <p>Sensitivity and specificity are always measured against something. An imperfect reference standard misclassifies people, and the index test is then blamed for the reference standard's errors. In a 2024 review of Truenat (Mahmoudi and Sadegh Moghaddasi), pooled sensitivity and specificity were 86% and 86% against LJ culture, 88% and 79% against MGIT culture, and 92% and 92% against Xpert MTB/RIF. Record the reference standard for every 2×2 table and analyse by it. Options when no good reference exists include restricting to studies with the best reference, a composite reference standard, or latent class models (which need statistical help).</p>
+    <h3>Unit of analysis</h3>
+    <p>Each 2×2 table should count people, once each. Samples, lesions, episodes or recordings from the same person are not independent; including them gives falsely narrow intervals and inflated weight. In a 2026 review of the TimBre cough-sound device, two primary studies reported results on 474 and 126 participants, one on 1191 participants, and one on 724,694 cough recordings. Check what each table counts before pooling.</p>
+  </section>
+
+  <section id="sG">
+    <h2>11. Certainty of evidence for test accuracy (GRADE)</h2>
+    <p>GRADE for tests rates certainty separately for sensitivity and specificity, and presents results as true positives, false negatives, false positives and true negatives per 1000 people tested at one or more stated prevalences. Evidence from cross-sectional accuracy studies starts at high certainty and is rated down for:</p>
+    <div class="scroll"><table>
+      <tr><th>Domain</th><th>What it means for test accuracy</th></tr>
+      <tr><td>Risk of bias</td><td>QUADAS-3 (or QUADAS-2) judgements for the estimates used</td></tr>
+      <tr><td>Indirectness</td><td>Differences between the studies and the review question in population, setting, index test or reference standard</td></tr>
+      <tr><td>Inconsistency</td><td>Unexplained heterogeneity in sensitivity or specificity</td></tr>
+      <tr><td>Imprecision</td><td>Wide confidence intervals, judged by their effect on the numbers per 1000</td></tr>
+      <tr><td>Publication bias</td><td>Hard to assess; standard funnel plots do not apply. Deeks' funnel plot test is used, with low power.</td></tr>
+    </table></div>
+    <p>Example: in the Cochrane Truenat review, sensitivity of Truenat MTB (87.6%) was rated high certainty and specificity (86.1%, 95% CI 70.1 to 94.3) moderate certainty. Day 3 of the workshop covers GRADE in detail.</p>
+  </section>
+
   <section id="s10">
-    <h2>10. The extraction form</h2>
+    <h2>12. The extraction form</h2>
     <p>A ready-to-use form is in <a href="data/dta-extraction-form.csv">data/dta-extraction-form.csv</a> (opens in Excel or Google Sheets). Its sections:</p>
     <div class="scroll"><table>
       <tr><th>Section</th><th>Fields</th></tr>
@@ -196,7 +255,7 @@
   </section>
 
   <section id="s11">
-    <h2>11. Common errors checklist</h2>
+    <h2>13. Common errors checklist</h2>
     <ul>
       <li>FP and FN swapped because the paper printed the table transposed.</li>
       <li>Column totals do not equal the number with and without the target condition.</li>
@@ -212,7 +271,7 @@
   </section>
 
   <section id="s12">
-    <h2>12. Dataset for the 4 pm hands-on</h2>
+    <h2>14. Dataset for the 4 pm hands-on</h2>
     <p>The five illustrative studies, ready to type into RevMan Web or read into R: <a href="data/crp-dta.csv">data/crp-dta.csv</a>.</p>
     <div class="scroll"><table>
       <tr><th>Study</th><th class="num">Cut-off (mg/L)</th><th class="num">TP</th><th class="num">FP</th><th class="num">FN</th><th class="num">TN</th><th class="num">Sens.</th><th class="num">Spec.</th></tr>
@@ -225,8 +284,67 @@
     <p class="note">Study E also reports 20 mg/L (45, 47, 12, 276) and 40 mg/L (33, 13, 24, 310) for a multiple-threshold analysis.</p>
   </section>
 
+  <section id="sC">
+    <h2>15. Case studies: four recent India-relevant reviews</h2>
+    <p>Each review is summarised with the questions worth asking when you read it. The questions apply to any diagnostic accuracy review; they are not a judgement on the authors, several of whom list the same points as limitations.</p>
+
+    <div class="case">
+      <h3>1. Truenat assays for pulmonary TB and rifampicin resistance (Cochrane, 2025)</h3>
+      <p><strong>Question:</strong> accuracy of Truenat MTB, MTB Plus and MTB-RIF Dx in adults and adolescents (10 years and over) with presumptive pulmonary TB, against culture (and culture-based drug susceptibility testing for rifampicin resistance). Truenat is made by Molbio, Goa.</p>
+      <p><strong>Data and methods:</strong> 10 studies, mostly in high-burden low- and middle-income countries. Truenat MTB: 6 studies, 4081 participants (1379 with TB). MTB Plus: 4 studies, 3073 (750 with TB). QUADAS-2 and QUADAS-C; bivariate model; GRADE.</p>
+      <p><strong>Results:</strong> Truenat MTB sensitivity 87.6% (81.6 to 91.8), specificity 86.1% (70.1 to 94.3). MTB Plus 90.6% (83.7 to 94.8) and 95.7% (94.7 to 96.5). In three studies that tested both assays in the same people, Truenat MTB sensitivity was 81.0% against 93.7% for Xpert Ultra.</p>
+      <p class="ask"><strong>Read it for:</strong> the per 1000 table; how a comparison between two tests is restricted to studies that applied both tests to the same people; how certainty is rated separately for sensitivity and specificity.</p>
+      <p class="cite2">Inbaraj LR, Daniel J, Sathya Narayanan MK, Srinivasalu VA, Bhaskar A, Scandrett K, et al. Cochrane Database Syst Rev. 2025;3:CD015543.</p>
+    </div>
+
+    <div class="case">
+      <h3>2. TB-LAMP for pulmonary and extrapulmonary TB (Lancet Microbe, 2025)</h3>
+      <p><strong>Question:</strong> accuracy of TB-LAMP, a manual low-complexity nucleic acid amplification test, against culture, to inform the 2024 WHO guideline update. Authors from ICMR-NIRT Chennai and CMC Vellore, with the University of Birmingham and WHO.</p>
+      <p><strong>Data and methods:</strong> 29 studies; the pulmonary meta-analysis included 26 studies and 18,297 participants (4108 with TB), including three studies from India. QUADAS-2; bivariate random-effects model; the person, not the sample, as the unit of analysis; GRADE.</p>
+      <p><strong>Results:</strong> pulmonary TB sensitivity 84.1% (78.3 to 88.6), specificity 96.1% (94.2 to 97.4), both high certainty. Restricted to low risk of bias studies: 80.1% and 96.7%. Smear-positive sensitivity 95.9%; smear-negative 59.9%. At 10% pre-test probability, PPV 70.6% and NPV 98.2%. Extrapulmonary samples had only one to three studies each and were mostly reported study by study.</p>
+      <p class="ask"><strong>Read it for:</strong> a sensitivity analysis limited to low risk of bias; subgroups that show spectrum; and how to report sparse data honestly rather than force a pooled estimate.</p>
+      <p class="cite2">Inbaraj LR, Srinivasalu VA, Sathya Narayanan MK, Bhaskar A, Daniel J, Scandrett K, et al. Lancet Microbe. 2025;6:101169.</p>
+    </div>
+
+    <div class="case">
+      <h3>3. Isothermal (LAMP) assays for scrub typhus (Frontiers in Microbiology, 2025)</h3>
+      <p><strong>Question:</strong> accuracy of point-of-care isothermal assays for rickettsial disease; all eligible studies evaluated LAMP for scrub typhus. Authors from Central University of Tamil Nadu, CMC Vellore, PGIMER Chandigarh and SCB Medical College Cuttack. Registered on PROSPERO.</p>
+      <p><strong>Data and methods:</strong> 6 studies (4 from India, 2 from Thailand), with four different reference standards: STICS criteria, IFA, nested PCR, and PCR with ELISA. Two reviewers extracted data; some 2×2 tables were derived from reported sensitivity and specificity. QUADAS-2; bivariate model in Meta-DiSc 2.0.</p>
+      <p><strong>Results:</strong> sensitivity 66% (40 to 85), specificity 94% (81 to 98). Study design explained heterogeneity in meta-regression; case-control studies gave higher sensitivity than cross-sectional studies.</p>
+      <p class="ask"><strong>Questions to ask:</strong> Which 2×2 tables were back-calculated, and do they reproduce the published figures? Can results against four different reference standards be combined? What do confidence intervals this wide, from six studies, allow us to conclude?</p>
+      <p class="cite2">Dixit R, Manikandan S, Prakash JAJ, Biswal M, Mohapatra D, Gopalan N, et al. Front Microbiol. 2025;15:1516921.</p>
+    </div>
+
+    <div class="case">
+      <h3>4. TimBre acoustic device for pulmonary TB (IJCMPH, 2026)</h3>
+      <p><strong>Question:</strong> accuracy of TimBre, an AI device that analyses cough sounds, for detecting pulmonary TB. Authors from the Indian Institute of Public Health, Hyderabad. Registered on PROSPERO.</p>
+      <p><strong>Data and methods:</strong> three primary studies, all from one research group, in India and other countries. Reference standards included smear, Xpert, Xpert Ultra and chest X-ray. QUADAS-2; sensitivity and specificity pooled separately with univariate random-effects models in R (mada).</p>
+      <p><strong>Results:</strong> sensitivity 71% (68 to 75), specificity 76% (60 to 87); I² 99.7% and 98.5%. The authors list the small number of studies, heterogeneity, differences in reference standards, and reconstructed values as limitations, and call for independent multicentre validation.</p>
+      <p class="ask"><strong>Questions to ask:</strong> Would a bivariate model change the summary estimates? Does each 2×2 table count people or cough recordings? Which reference standard defines TB in each study, and is chest X-ray an acceptable one? How independent are studies from one group?</p>
+      <p class="cite2">Tejesh S, Manna A, Yazhini R, Qadeer AS, Afnan Z, Nirupama AY. Int J Community Med Public Health. 2026;13(5):2454-9.</p>
+    </div>
+  </section>
+
+  <section id="sR">
+    <h2>16. How to read a diagnostic accuracy review: a checklist</h2>
+    <ol>
+      <li>Is the question clear: participants and setting, index test, target condition, reference standard? Was a protocol registered?</li>
+      <li>Was the search broad enough, without a methodological "diagnostic filter" that would miss studies?</li>
+      <li>Did two reviewers select studies and extract data independently?</li>
+      <li>Is the reference standard stated, and the same or comparable across studies?</li>
+      <li>Is the design of each study reported (single-gate or two-gate)? Were two-gate studies analysed separately?</li>
+      <li>Is the cut-off reported for every study? Was the threshold effect handled?</li>
+      <li>How were the 2×2 tables obtained: reported, back-calculated or from authors? Is the unit of analysis the person?</li>
+      <li>Was risk of bias assessed with QUADAS-2 or QUADAS-3, and did it inform the analysis (for example a sensitivity analysis)?</li>
+      <li>Were sensitivity and specificity pooled jointly (bivariate or HSROC), not separately?</li>
+      <li>Is heterogeneity described with forest plots, SROC plot and prediction region, and explored with prespecified covariates, rather than by I² alone?</li>
+      <li>Are predictive values or numbers per 1000 given at a stated, realistic prevalence?</li>
+      <li>Is certainty rated (GRADE), separately for sensitivity and specificity? Is reporting in line with PRISMA-DTA?</li>
+    </ol>
+  </section>
+
   <section id="s13">
-    <h2>13. Further reading</h2>
+    <h2>17. Further reading</h2>
     <ol class="note" style="font-size:15px">
       <li>Deeks JJ, Bossuyt PM, Leeflang MM, Takwoingi Y, eds. Cochrane Handbook for Systematic Reviews of Diagnostic Test Accuracy. Version 2.0. Cochrane; 2023. training.cochrane.org/handbook-diagnostic-test-accuracy</li>
       <li>Whiting PF, Tomlinson E, Rutjes AWS, et al. QUADAS-3: a revised tool for the quality assessment of diagnostic test accuracy studies. Ann Intern Med. 2026. doi:10.7326/ANNALS-25-02104</li>
@@ -237,6 +355,11 @@
       <li>Altman DG, Bland JM. Diagnostic tests 2: predictive values. BMJ. 1994;309:102.</li>
       <li>Deeks JJ, Altman DG. Diagnostic tests 4: likelihood ratios. BMJ. 2004;329:168-9.</li>
       <li>McInnes MDF, Moher D, Thombs BD, et al. The PRISMA-DTA statement. JAMA. 2018;319:388-96.</li>
+      <li>Inbaraj LR, Daniel J, Sathya Narayanan MK, et al. Truenat MTB assays for pulmonary tuberculosis and rifampicin resistance in adults and adolescents. Cochrane Database Syst Rev. 2025;3:CD015543.</li>
+      <li>Inbaraj LR, Srinivasalu VA, Sathya Narayanan MK, et al. Diagnostic accuracy of low-complexity, manual nucleic acid amplification tests for the detection of pulmonary and extrapulmonary tuberculosis in adults and adolescents. Lancet Microbe. 2025;6:101169.</li>
+      <li>Dixit R, Manikandan S, Prakash JAJ, et al. The diagnostic accuracy of point-of-care nucleic acid-based isothermal amplification assays for scrub typhus. Front Microbiol. 2025;15:1516921.</li>
+      <li>Tejesh S, Manna A, Yazhini R, et al. Diagnostic accuracy of the TimBre acoustic device for detecting pulmonary tuberculosis. Int J Community Med Public Health. 2026;13(5):2454-9.</li>
+      <li>Mahmoudi S, Sadegh Moghaddasi AH. Evaluation of Truenat assays for the diagnosis of pulmonary and extrapulmonary tuberculosis. Expert Rev Anti Infect Ther. 2024. doi:10.1080/14787210.2024.2389876</li>
       <li>Bossuyt PM, Reitsma JB, Bruns DE, et al. STARD 2015: an updated list of essential items for reporting diagnostic accuracy studies. BMJ. 2015;351:h5527.</li>
     </ol>
   </section>

@@ -28,7 +28,7 @@ const report = await page.evaluate(async () => {
   const slides = Reveal.getSlides();
   const out = [];
   for (let i = 0; i < slides.length; i++) {
-    Reveal.slide(i);
+    const ix = Reveal.getIndices(slides[i]); Reveal.slide(ix.h, ix.v || 0);
     await new Promise(r => setTimeout(r, 60));
     const s = slides[i];
     const top = s.getBoundingClientRect().top;
@@ -54,8 +54,9 @@ const report = await page.evaluate(async () => {
       }
     }
     const title = (s.querySelector('h2, h1')?.textContent || '').trim().slice(0, 60);
+    const ixx = Reveal.getIndices(s);
     const hasNotes = !!s.querySelector('aside.notes');
-    out.push({ i: i + 1, title, bottom: Math.round(bottom), culprit, small: [...small], hasNotes });
+    out.push({ i: ixx.h + 1 + (ixx.v ? '.' + ixx.v : ''), title, bottom: Math.round(bottom), culprit, small: [...small], hasNotes });
   }
   const text = document.body.innerText + [...document.querySelectorAll('aside.notes')].map(n => n.textContent).join(' ');
   const html = document.documentElement.outerHTML;
